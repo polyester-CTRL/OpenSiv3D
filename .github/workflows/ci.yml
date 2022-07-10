@@ -48,6 +48,11 @@ jobs:
         sudo apt install uuid-dev
         sudo apt install xorg-dev
 
+    - name: Lint
+      run: |
+        sudo apt install clang-format-10
+        find ./ -name '*.hpp' -or -name '*.cpp' -print0 | xargs -0 clang-format-10 -n --style=file
+
     - name: Configure Siv3D
       working-directory: Linux
       run: |

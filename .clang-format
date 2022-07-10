@@ -1,0 +1,21 @@
+Language: Cpp
+Standard: c++20
+UseTab: ForIndentation
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+NamespaceIndentation: All
+TabWidth: 1
+IndentWidth: 1
+DerivePointerAlignment: true
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  BeforeElse: true
+  AfterNamespace: true
+  AfterStruct: true
