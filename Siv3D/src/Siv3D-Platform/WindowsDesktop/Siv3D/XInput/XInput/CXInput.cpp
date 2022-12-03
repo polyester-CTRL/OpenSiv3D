@@ -96,7 +96,7 @@ namespace s3d
 			{
 				if (state.connected)
 				{
-					state.clear();
+					state.reset();
 
 					LOG_INFO(U"🎮 XInput({}) disconnected"_fmt(userIndex));
 				}
@@ -222,21 +222,35 @@ namespace s3d
 	{
 		assert(playerIndex < XInput.MaxPlayerCount);
 
-		return m_states[playerIndex].buttons[index].down;
+		return m_states[playerIndex].buttons[index].down();
 	}
 
 	bool CXInput::pressed(const uint32 playerIndex, const uint32 index) const
 	{
 		assert(playerIndex < XInput.MaxPlayerCount);
 
-		return m_states[playerIndex].buttons[index].pressed;
+		return m_states[playerIndex].buttons[index].pressed();
 	}
 
 	bool CXInput::up(const uint32 playerIndex, const uint32 index) const
 	{
 		assert(playerIndex < XInput.MaxPlayerCount);
 
-		return m_states[playerIndex].buttons[index].up;
+		return m_states[playerIndex].buttons[index].up();
+	}
+
+	void CXInput::clearInput(const uint32 playerIndex, const uint32 index)
+	{
+		assert(playerIndex < XInput.MaxPlayerCount);
+
+		m_states[playerIndex].buttons[index].clearInput();
+	}
+
+	bool CXInput::cleared(const uint32 playerIndex, const uint32 index) const
+	{
+		assert(playerIndex < XInput.MaxPlayerCount);
+
+		return m_states[playerIndex].buttons[index].cleared();
 	}
 
 	Duration CXInput::pressedDuration(const uint32 playerIndex, const uint32 index) const

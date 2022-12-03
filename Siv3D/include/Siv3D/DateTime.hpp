@@ -216,10 +216,7 @@ namespace s3d
 			return output << value.format();
 		}
 
-		friend void Formatter(FormatData& formatData, const DateTime& value)
-		{
-			formatData.string.append(value.format());
-		}
+		friend void Formatter(FormatData& formatData, const DateTime& value);
 	};
 
 	/// @brief 日付と時刻を文字列に変換します。
@@ -269,7 +266,7 @@ struct SIV3D_HIDDEN fmt::formatter<s3d::DateTime, s3d::char32>
 
 		if (tag.empty())
 		{
-			return format_to(ctx.out(), sv);
+			return format_to(ctx.out(), U"{}", sv);
 		}
 		else
 		{

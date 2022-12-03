@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 project(OpenSiv3D_Linux
-    VERSION 0.6.5
+    VERSION 0.6.6
     LANGUAGES CXX C ASM
     HOMEPAGE_URL "https://github.com/Siv3D/OpenSiv3D"
     DESCRIPTION "A C++20 framework for creative coding (2D/3D games, media art, visualizers, and simulators)."
@@ -245,6 +245,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/Cylinder/SivCylinder.cpp
   ../Siv3D/src/Siv3D/DateTime/SivDateTime.cpp
   ../Siv3D/src/Siv3D/DebugCamera3D/SivDebugCamera3D.cpp
+  ../Siv3D/src/Siv3D/Demangle/SivDemangle.cpp
   ../Siv3D/src/Siv3D/Dialog/SivDialog.cpp
   ../Siv3D/src/Siv3D/DirectoryWatcher/SivDirectoryWatcher.cpp
   ../Siv3D/src/Siv3D/Disc/SivDisc.cpp
@@ -269,6 +270,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/FFT/CFFT.cpp
   ../Siv3D/src/Siv3D/FFT/FFTFactory.cpp
   ../Siv3D/src/Siv3D/FFT/SivFFT.cpp
+  ../Siv3D/src/Siv3D/FileFilter/SivFileFilter.cpp
   ../Siv3D/src/Siv3D/FileSystem/SivFileSystem.cpp
   ../Siv3D/src/Siv3D/Font/CFont.cpp
   ../Siv3D/src/Siv3D/Font/CFont_Headless.cpp
@@ -311,6 +313,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/GUI/CGUI.cpp
   ../Siv3D/src/Siv3D/GUI/GUIFactory.cpp
   ../Siv3D/src/Siv3D/Hash/SivHash.cpp
+  ../Siv3D/src/Siv3D/HSV/SivHSV.cpp
   ../Siv3D/src/Siv3D/HTMLWriter/HTMLWriterDetail.cpp
   ../Siv3D/src/Siv3D/HTMLWriter/SivHTMLWriter.cpp
   ../Siv3D/src/Siv3D/HTTPResponse/SivHTTPResponse.cpp
@@ -376,6 +379,9 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/MD5Value/SivMD5Value.cpp
   ../Siv3D/src/Siv3D/MemoryMappedFileView/SivMemoryMappedFileView.cpp
   ../Siv3D/src/Siv3D/MemoryMappedFile/SivMemoryMappedFile.cpp
+  ../Siv3D/src/Siv3D/MemoryReader/SivMemoryReader.cpp
+  ../Siv3D/src/Siv3D/MemoryViewReader/SivMemoryViewReader.cpp
+  ../Siv3D/src/Siv3D/MemoryWriter/SivMemoryWriter.cpp
   ../Siv3D/src/Siv3D/Mesh/Null/CMesh_Null.cpp
   ../Siv3D/src/Siv3D/Mesh/SivMesh.cpp
   ../Siv3D/src/Siv3D/MeshData/MeshUtility.cpp
@@ -401,8 +407,10 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/Network/CNetwork.cpp
   ../Siv3D/src/Siv3D/Network/NetworkFactory.cpp
   ../Siv3D/src/Siv3D/Network/SivNetwork.cpp
+  ../Siv3D/src/Siv3D/None/SivNone.cpp
   ../Siv3D/src/Siv3D/OpenCV_Bridge/SivOpenCV_Bridge.cpp
   ../Siv3D/src/Siv3D/OrientedBox/SivOrientedBox.cpp
+  ../Siv3D/src/Siv3D/Parse/SivParse.cpp
   ../Siv3D/src/Siv3D/ParseBool/SivParseBool.cpp
   ../Siv3D/src/Siv3D/ParseFloat/SivParseFloat.cpp
   ../Siv3D/src/Siv3D/ParseInt/SivParseInt.cpp
@@ -411,6 +419,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/ParticleSystem2D/SivParticleSystem2D.cpp
   ../Siv3D/src/Siv3D/Pentablet/Null/CPentablet_Null.cpp
   ../Siv3D/src/Siv3D/Pentablet/SivPentablet.cpp
+  ../Siv3D/src/Siv3D/Periodic/SivPeriodic.cpp
   ../Siv3D/src/Siv3D/Physics2D/P2Body.cpp
   ../Siv3D/src/Siv3D/Physics2D/P2BodyDetail.cpp
   ../Siv3D/src/Siv3D/Physics2D/P2Circle.cpp
@@ -438,6 +447,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/PixelShaderAsset/SivPixelShaderAsset.cpp
   ../Siv3D/src/Siv3D/PixelShaderAssetData/SivPixelShaderAssetData.cpp
   ../Siv3D/src/Siv3D/Plane/SivPlane.cpp
+  ../Siv3D/src/Siv3D/PlayingCard/SivPlayingCard.cpp
   ../Siv3D/src/Siv3D/Point/SivPoint.cpp
   ../Siv3D/src/Siv3D/Polygon/PolygonDetail.cpp
   ../Siv3D/src/Siv3D/Polygon/SivPolygon.cpp
@@ -507,6 +517,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/Script/Bind/ScriptBezier2.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptBezier3.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptCamera2D.cpp
+  ../Siv3D/src/Siv3D/Script/Bind/ScriptCamera2DParameters.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptCameraControl.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptChar.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptCircle.cpp
@@ -548,6 +559,8 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/Script/Bind/ScriptInterpolation.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptKeyboard.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptLanguageCode.cpp
+  ../Siv3D/src/Siv3D/Script/Bind/ScriptLicenseInfo.cpp
+  ../Siv3D/src/Siv3D/Script/Bind/ScriptLicenseManager.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptLine.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptLineString.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptLineStyle.cpp
@@ -628,6 +641,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/Script/Bind/ScriptWaveSample.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptWindow.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptWindowStyle.cpp
+  ../Siv3D/src/Siv3D/Script/Bind/ScriptXInput.cpp
   ../Siv3D/src/Siv3D/Script/Bind/ScriptYesNo.cpp
   ../Siv3D/src/Siv3D/Script/CScript.cpp
   ../Siv3D/src/Siv3D/Script/ScriptData.cpp
@@ -636,6 +650,8 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/SerialPortInfo/SivSerialPortInfo.cpp
   ../Siv3D/src/Siv3D/Serial/SerialDetail.cpp
   ../Siv3D/src/Siv3D/Serial/SivSerial.cpp
+  ../Siv3D/src/Siv3D/SFMT/SivSFMT.cpp
+  ../Siv3D/src/Siv3D/ShaderCommon/SivShaderCommon.cpp
   ../Siv3D/src/Siv3D/Shader/Null/CShader_Null.cpp
   ../Siv3D/src/Siv3D/Shader/SivShader.cpp
   ../Siv3D/src/Siv3D/Shape2D/SivShape2D.cpp
@@ -643,6 +659,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/SimpleAnimation/SivSimpleAnimation.cpp
   ../Siv3D/src/Siv3D/SimpleGUI/SivSimpleGUI.cpp
   ../Siv3D/src/Siv3D/SimpleHTTP/SivSimpleHTTP.cpp
+  ../Siv3D/src/Siv3D/SimpleMenuBar/SivSimpleMenuBar.cpp
   ../Siv3D/src/Siv3D/Sky/SivSky.cpp
   ../Siv3D/src/Siv3D/SoundFont/CSoundFont.cpp
   ../Siv3D/src/Siv3D/SoundFont/SivSoundFont.cpp
@@ -685,10 +702,13 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/TextWriter/TextWriterDetail.cpp  
   ../Siv3D/src/Siv3D/Threading/SivThreading.cpp
   ../Siv3D/src/Siv3D/TimeProfiler/SivTimeProfiler.cpp
+  ../Siv3D/src/Siv3D/Timer/SivTimer.cpp
   ../Siv3D/src/Siv3D/ToastNotification/SivToastNotification.cpp
   ../Siv3D/src/Siv3D/ToastNotification/ToastNotificationFactory.cpp
   ../Siv3D/src/Siv3D/TOMLReader/SivTOMLReader.cpp
   ../Siv3D/src/Siv3D/Triangle/SivTriangle.cpp
+  ../Siv3D/src/Siv3D/Transformer2D/SivTransformer2D.cpp
+  ../Siv3D/src/Siv3D/Transformer3D/SivTransformer3D.cpp
   ../Siv3D/src/Siv3D/Triangle3D/SivTriangle3D.cpp
   ../Siv3D/src/Siv3D/Twitter/SivTwitter.cpp
   ../Siv3D/src/Siv3D/Unicode/SivUnicode.cpp
@@ -697,6 +717,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/UserAction/CUserAction.cpp
   ../Siv3D/src/Siv3D/UserAction/UserActionFactory.cpp
   ../Siv3D/src/Siv3D/UUIDValue/SivUUIDValue.cpp
+  ../Siv3D/src/Siv3D/VariableSpeedStopwatch/SivVariableSpeedStopwatch.cpp
   ../Siv3D/src/Siv3D/Vector2D/SivVector2D.cpp
   ../Siv3D/src/Siv3D/Vector3D/SivVector3D.cpp
   ../Siv3D/src/Siv3D/Vector4D/SivVector4D.cpp

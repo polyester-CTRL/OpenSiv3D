@@ -53,27 +53,53 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Grid(Grid&&) = default;
 
+		/// @brief 二次元配列を作成します。
+		/// @param w 幅
+		/// @param h 高さ
 		SIV3D_NODISCARD_CXX20
 		Grid(size_type w, size_type h);
 
+		/// @brief 二次元配列を作成します。
+		/// @param w 幅
+		/// @param h 高さ
+		/// @param value 要素の初期値
 		SIV3D_NODISCARD_CXX20
 		Grid(size_type w, size_type h, const value_type& value);
 
+		/// @brief 二次元配列を作成します。
+		/// @param size 幅と高さ
 		SIV3D_NODISCARD_CXX20
 		explicit Grid(Size size);
 
+		/// @brief 二次元配列を作成します。
+		/// @param size 幅と高さ
+		/// @param value 要素の初期値
 		SIV3D_NODISCARD_CXX20
 		Grid(Size size, const value_type& value);
 
+		/// @brief 配列から二次元配列を作成します。
+		/// @param w 幅
+		/// @param h 高さ
+		/// @param data 幅 × 高さの要素数を持つ配列
 		SIV3D_NODISCARD_CXX20
 		Grid(size_type w, size_type h, const Array<value_type>& data);
 
+		/// @brief 配列から二次元配列を作成します。
+		/// @param w 幅
+		/// @param h 高さ
+		/// @param data 幅 × 高さの要素数を持つ配列
 		SIV3D_NODISCARD_CXX20
 		Grid(size_type w, size_type h, Array<value_type>&& data);
 
+		/// @brief 配列から二次元配列を作成します。
+		/// @param size 幅と高さ
+		/// @param data 幅 × 高さの要素数を持つ配列
 		SIV3D_NODISCARD_CXX20
 		Grid(Size size, const Array<value_type>& data);
 
+		/// @brief 配列から二次元配列を作成します。
+		/// @param size 幅と高さ
+		/// @param data 幅 × 高さの要素数を持つ配列
 		SIV3D_NODISCARD_CXX20
 		Grid(Size size, Array<value_type>&& data);
 
@@ -128,9 +154,15 @@ namespace s3d
 
 		value_type at(Point pos)&&;
 
+		/// @brief 行の先頭ポインタを返します。
+		/// @param index 行のインデックス
+		/// @return 指定したインデックスの行の先頭ポインタ
 		[[nodiscard]]
 		value_type* operator [](size_t index);
 
+		/// @brief 行の先頭ポインタを返します。
+		/// @param index 行のインデックス
+		/// @return 指定したインデックスの行の先頭ポインタ
 		[[nodiscard]]
 		const value_type* operator [](size_t index) const;
 
@@ -149,9 +181,11 @@ namespace s3d
 		[[nodiscard]]
 		bool inBounds(Point pos) const noexcept;
 
-		[[nodiscard]] pointer data() noexcept;
+		[[nodiscard]]
+		pointer data() noexcept;
 
-		[[nodiscard]] const_pointer data() const noexcept;
+		[[nodiscard]]
+		const_pointer data() const noexcept;
 
 		/// @brief 配列が空であるかを返します。
 		/// @return 配列が空である場合 true, それ以外の場合は false
@@ -197,6 +231,7 @@ namespace s3d
 
 		void shrink_to_fit();
 
+		/// @brief 配列を空にします。
 		void clear() noexcept;
 
 		/// @brief 配列の要素を全て消去し、メモリも解放します。
@@ -551,9 +586,7 @@ namespace s3d
 				}
 				else
 				{
-					formatData.string.push_back(U',');
-
-					formatData.string.push_back(U'\n');
+					formatData.string.append(U",\n");
 				}
 
 				Formatter(formatData, value[y], value[y] + value.width());
@@ -620,20 +653,36 @@ struct SIV3D_HIDDEN fmt::formatter<s3d::Grid<Type, Allocator>, s3d::char32>
 	template <class FormatContext>
 	auto format(const s3d::Grid<Type, Allocator>& value, FormatContext& ctx)
 	{
-		if (tag.empty())
+		if (value.empty())
 		{
-			const s3d::String s = s3d::Format(value).replace(U"{", U"{{").replace(U"}", U"}}");
-			const basic_string_view<s3d::char32> sv(s.data(), s.size());
-			return format_to(ctx.out(), sv);
+			return format_to(ctx.out(), U"{{}}");
 		}
-		else
+
+		const std::u32string firstTag = (tag.empty() ? U"{{{}" : (U"{{{:" + tag + U"}"));
+		const std::u32string secondTag = (tag.empty() ? U", {}" : (U", {:" + tag + U"}"));
+
+		auto it = format_to(ctx.out(), U"{{");
+		
+		for (size_t y = 0; y < value.height(); ++y)
 		{
-			const s3d::String format = U"{:" + tag + U'}';
-			const auto formatHelper = s3d::Fmt(format);
-			const s3d::String s = s3d::Format(value.map([&formatHelper](const auto& e) { return formatHelper(e); })).replace(U"{", U"{{").replace(U"}", U"}}");
-			const basic_string_view<s3d::char32> sv(s.data(), s.size());
-			return format_to(ctx.out(), sv);
+			if (y != 0)
+			{
+				it = format_to(it, U",\n");
+			}
+
+			it = format_to(it, firstTag, value[y][0]);
+
+			for (size_t x = 1; x < value.width(); ++x)
+			{
+				it = format_to(it, secondTag, value[y][x]);
+			}
+
+			it = format_to(it, U"}}");
 		}
+		
+		it = format_to(it, U"}}");
+
+		return it;
 	}
 };
 

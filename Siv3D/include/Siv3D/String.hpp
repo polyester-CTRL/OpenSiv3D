@@ -15,12 +15,10 @@
 # endif
 # include <functional>
 # include <string>
-# include <unordered_set>
 # include "Common.hpp"
 # include "StringView.hpp"
 # include "Utility.hpp"
 # include "Random.hpp"
-# include "Char.hpp"
 # include "Shuffle.hpp"
 
 namespace s3d
@@ -1191,7 +1189,7 @@ namespace s3d
 
 		friend bool operator ==(const String& lhs, const value_type* rhs);
 
-#if __cpp_impl_three_way_comparison
+#if __cpp_lib_three_way_comparison
 
 		bool operator ==(const String& rhs) const noexcept = default;
 
@@ -1291,19 +1289,19 @@ namespace s3d
 	};
 
 	[[nodiscard]]
-	inline String operator +(const String::value_type lhs, StringView rhs);
+	String operator +(const String::value_type lhs, StringView rhs);
 
 	[[nodiscard]]
-	inline String operator +(const String::value_type* lhs, StringView rhs);
+	String operator +(const String::value_type* lhs, StringView rhs);
 
 	[[nodiscard]]
-	inline String operator +(StringView lhs, const String::value_type* rhs);
+	String operator +(StringView lhs, const String::value_type* rhs);
 
 	[[nodiscard]]
-	inline String operator +(StringView lhs, StringView rhs);
+	String operator +(StringView lhs, StringView rhs);
 
 	[[nodiscard]]
-	inline String operator +(StringView lhs, const String::value_type rhs);
+	String operator +(StringView lhs, const String::value_type rhs);
 
 	inline void swap(String& a, String& b) noexcept;
 

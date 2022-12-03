@@ -526,6 +526,17 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RectF scaledAt(Vec2 _pos, Vec2 s) const noexcept;
 
+		/// @brief 長方形が空でないかを返します。
+		/// @remark `hasArea()` と同じです。
+		/// @return 長方形が空でない場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr explicit operator bool() const noexcept;
+
+		/// @brief 長方形が空であるかを返します。
+		/// @return 空の長方形である場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isEmpty() const noexcept;
+
 		/// @brief 長方形が大きさを持っているかを返します。
 		/// @return 長方形が大きさを持っている場合 true, それ以外の場合は false
 		[[nodiscard]]
@@ -571,13 +582,13 @@ namespace s3d
 		[[nodiscard]]
 		constexpr size_type tr() const noexcept;
 
-		/// @brief 長方形の左下の座標を返します。
-		/// @return 長方形の左下の座標
+		/// @brief 長方形の右下の座標を返します。
+		/// @return 長方形の右下の座標
 		[[nodiscard]]
 		constexpr size_type br() const noexcept;
 
-		/// @brief 長方形の右下の座標を返します。
-		/// @return 長方形の右下の座標
+		/// @brief 長方形の左下の座標を返します。
+		/// @return 長方形の左下の座標
 		[[nodiscard]]
 		constexpr size_type bl() const noexcept;
 
@@ -671,6 +682,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Quad shearedY(double vy) const noexcept;
 
+		/// @brief 角を丸めた RoundRect を作成して返します。
+		/// @param r 角の半径
+		/// @return 作成した RoundRect
 		[[nodiscard]]
 		constexpr RoundRect rounded(double r) const noexcept;
 
@@ -705,6 +719,18 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr RectF lerp(const RectF& other, double f) const noexcept;
+
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr Rect getOverlap(const Rect& other) const noexcept;
+
+		/// @brief 別の長方形と重なる領域を返します。重ならない場合は空の長方形を返します。
+		/// @param other 別の長方形
+		/// @return 別の長方形と重なる領域。重ならない場合は空の長方形
+		[[nodiscard]]
+		constexpr RectF getOverlap(const RectF& other) const noexcept;
 
 		[[nodiscard]]
 		size_t hash() const noexcept;
@@ -801,6 +827,13 @@ namespace s3d
 		/// @param outerColor 外側寄りの枠の色
 		/// @return *this
 		const Rect& drawFrame(double thickness, const ColorF& innerColor, const ColorF& outerColor) const;
+		
+		/// @brief 長方形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
+		const Rect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		/// @brief 長方形の枠を描画します。
 		/// @param innerThickness 内側寄りの枠の太さ
@@ -817,6 +850,14 @@ namespace s3d
 		/// @return *this
 		const Rect& drawFrame(double innerThickness, double outerThickness, const ColorF& innerColor, const ColorF& outerColor) const;
 
+		/// @brief 長方形の枠を描画します。
+		/// @param innerThickness 内側寄りの枠の太さ
+		/// @param outerThickness 外側寄りの枠の太さ
+		/// @param topColor 上側の色
+		/// @param bottomColor 下側の色
+		/// @return *this
+		const Rect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
 		/// @brief 長方形の影を描画します。
 		/// @param offset 影の位置のオフセット（ピクセル）
 		/// @param blurRadius 影のぼかし半径（ピクセル）
@@ -830,6 +871,11 @@ namespace s3d
 
 		[[nodiscard]]
 		TexturedQuad operator ()(const TextureRegion& textureRegion) const;
+
+		/// @brief 空の長方形を返します。
+		/// @return 空の長方形 (`Rect{ 0, 0, 0, 0 }`)
+		[[nodiscard]]
+		static constexpr Rect Empty() noexcept;
 
 		/// @brief 対角線上の 2 点の座標をもとに長方形を作成します。
 		/// @param a 対角線をなす座標の 1 つ

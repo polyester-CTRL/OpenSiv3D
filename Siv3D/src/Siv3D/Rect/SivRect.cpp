@@ -11,11 +11,11 @@
 
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Circular.hpp>
-# include <Siv3D/FormatFloat.hpp>
+# include <Siv3D/FormatInt.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/LineString.hpp>
-# include <Siv3D/Math.hpp>
+# include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
@@ -253,7 +253,7 @@ namespace s3d
 		};
 		const double perim = (w * 2 + h * 2);
 
-		distanceFromOrigin = Math::Fmod(distanceFromOrigin, perim) + (distanceFromOrigin < 0 ? perim : 0);
+		distanceFromOrigin = std::fmod(distanceFromOrigin, perim) + (distanceFromOrigin < 0 ? perim : 0);
 		length = Min(length, perim);
 		const double distanceToTarget = (distanceFromOrigin + length);
 
@@ -543,6 +543,11 @@ namespace s3d
 		return drawFrame((thickness * 0.5), (thickness * 0.5), innerColor, outerColor);
 	}
 
+	const Rect& Rect::drawFrame(double thickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), topColor, bottomColor);
+	}
+
 	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color) const
 	{
 		if ((w <= 0) || (h <= 0)
@@ -574,6 +579,16 @@ namespace s3d
 			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
 			static_cast<float>(innerThickness + outerThickness),
 			innerColor.toFloat4(), outerColor.toFloat4());
+
+		return *this;
+	}
+
+	const Rect& Rect::drawFrame(const double innerThickness, const double outerThickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addRectFrameTB(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			static_cast<float>(innerThickness + outerThickness),
+			topColor->toFloat4(), bottomColor->toFloat4());
 
 		return *this;
 	}

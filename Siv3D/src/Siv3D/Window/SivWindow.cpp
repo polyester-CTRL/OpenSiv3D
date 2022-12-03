@@ -13,6 +13,7 @@
 # include <Siv3D/Utility.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Monitor.hpp>
+# include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Window/IWindow.hpp>
@@ -42,9 +43,24 @@ namespace s3d
 			SIV3D_ENGINE(Window)->setStyle(style);
 		}
 
+		WindowStyle GetStyle() noexcept
+		{
+			return GetState().style;
+		}
+
 		void SetPos(const Point pos)
 		{
 			SIV3D_ENGINE(Window)->setPos(pos);
+		}
+
+		void SetPos(const int32 x, const int32 y)
+		{
+			SetPos(Point{ x, y });
+		}
+
+		Point GetPos() noexcept
+		{
+			return GetState().bounds.pos;
 		}
 
 		void Centering()
@@ -78,6 +94,16 @@ namespace s3d
 			SIV3D_ENGINE(Window)->minimize();
 		}
 
+		bool Resize(const Size size, const s3d::Centering centering)
+		{
+			return ResizeVirtual(size, centering);
+		}
+
+		bool Resize(const int32 width, const int32 height, const s3d::Centering centering)
+		{
+			return ResizeVirtual(Size{ width, height }, centering);
+		}
+
 		bool ResizeVirtual(const Size size, const s3d::Centering centering)
 		{
 			if ((not InRange(size.x, 1, 8192))
@@ -107,6 +133,11 @@ namespace s3d
 			}
 
 			return true;
+		}
+
+		bool ResizeVirtual(const int32 width, const int32 height, const s3d::Centering centering)
+		{
+			return ResizeVirtual(Size{ width, height }, centering);
 		}
 
 		bool ResizeActual(const Size size, const s3d::Centering centering)
@@ -140,6 +171,11 @@ namespace s3d
 			return true;
 		}
 
+		bool ResizeActual(const int32 width, const int32 height, const s3d::Centering centering)
+		{
+			return ResizeActual(Size{ width, height }, centering);
+		}
+
 		void SetMinimumFrameBufferSize(const Size size)
 		{
 			SIV3D_ENGINE(Window)->setMinimumFrameBufferSize(size);
@@ -168,6 +204,11 @@ namespace s3d
 		void* GetHWND()
 		{
 			return SIV3D_ENGINE(Window)->getHandle();
+		}
+
+		void SetTaskbarProgressBar(const double progress0_1)
+		{
+			SIV3D_ENGINE(Window)->setTaskbarProgressBar(progress0_1);
 		}
 	}
 

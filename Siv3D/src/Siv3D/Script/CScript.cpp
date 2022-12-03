@@ -163,6 +163,7 @@ namespace s3d
 			RegisterInput(m_engine);
 			RegisterKeyboard(m_engine);
 			RegisterMouse(m_engine);
+			RegisterXInput(m_engine);
 			RegisterImageFormat(m_engine);
 			RegisterImage(m_engine);
 
@@ -185,6 +186,7 @@ namespace s3d
 			RegisterDrawableText(m_engine);
 			RegisterTransformer2D(m_engine);
 			RegisterScopedViewport2D(m_engine);
+			RegisterCamera2DParameters(m_engine);
 			RegisterCameraControl(m_engine);
 			RegisterCamera2D(m_engine); // [Siv3D ToDo]
 
@@ -217,6 +219,8 @@ namespace s3d
 			RegisterTextInputMode(m_engine);
 			RegisterTextInput(m_engine);
 			RegisterTextEditState(m_engine);
+			RegisterLicenseInfo(m_engine);
+			RegisterLicenseManager(m_engine);
 			RegisterSimpleGUI(m_engine);
 			RegisterLanguageCode(m_engine);
 			RegisterTextToSpeech(m_engine);

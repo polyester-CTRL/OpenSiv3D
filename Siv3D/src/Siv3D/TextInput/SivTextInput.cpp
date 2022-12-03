@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/TextInput.hpp>
+# include <Siv3D/Char.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Indexed.hpp>
 # include <Siv3D/DrawableText.hpp>
@@ -203,21 +204,5 @@ namespace s3d
 			return SIV3D_ENGINE(TextInput)->getEditingTextStyle();
 		}
 	}
-
-# elif SIV3D_PLATFORM(WEB)
-
-	namespace Platform::Web::TextInput
-	{
-		void RequestEnableIME() 
-		{
-			Siv3DEngine::Get<ISiv3DTextInput>()->enableIME(true);
-		}
-
-		void RequestDisableIME() 
-		{
-			Siv3DEngine::Get<ISiv3DTextInput>()->enableIME(false);
-		}
-	}
-
 # endif
 }

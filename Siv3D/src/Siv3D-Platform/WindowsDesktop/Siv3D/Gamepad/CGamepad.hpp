@@ -40,6 +40,10 @@ namespace s3d
 
 		bool up(size_t playerIndex, uint32 index) override;
 
+		void clearInput(size_t playerIndex, uint32 index) override;
+
+		bool cleared(size_t playerIndex, uint32 index) override;
+
 		Duration pressedDuration(size_t playerIndex, uint32 index) override;
 
 		Optional<int32> povDegree(size_t playerIndex) override;

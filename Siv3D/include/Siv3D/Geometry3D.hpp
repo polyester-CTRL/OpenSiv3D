@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
 # include "Common.hpp"
 # include "Vertex3D.hpp"
 # include "Sphere.hpp"
@@ -17,10 +18,20 @@
 # include "OrientedBox.hpp"
 # include "Mat4x4.hpp"
 
+namespace DirectX
+{
+	struct BoundingSphere;
+	struct BoundingBox;
+	struct BoundingOrientedBox;
+}
+
 namespace s3d
 {
 	namespace Geometry3D
 	{
+		/// @brief 点群のバウンディングスフィアを返します。
+		/// @param points 点群
+		/// @return 点群のバウンディングスフィア
 		[[nodiscard]]
 		Sphere BoundingSphere(const Array<Float3>& points) noexcept;
 
@@ -62,7 +73,230 @@ namespace s3d
 
 		[[nodiscard]]
 		Box MergeBoundingBoxes(const Box& a, const Box& b) noexcept;
+
+
+
+
+		[[nodiscard]]
+		std::array<Vec3, 8> GetCorners(const Box& box) noexcept;
+
+		[[nodiscard]]
+		std::array<Vec3, 8> GetCorners(const OrientedBox& box) noexcept;
+
+		[[nodiscard]]
+		std::array<Vec3, 8> GetCorners(const ViewFrustum& frustum) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	Sphere intersects ...
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool Intersects(const Sphere& a, const Vec3& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Sphere& a, const Triangle3D& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Sphere& a, const Sphere& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Sphere& a, const Box& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Sphere& a, const OrientedBox& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Sphere& a, const ViewFrustum& b) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	Box intersects ...
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool Intersects(const Box& a, const Vec3& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Box& a, const Triangle3D& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Box& a, const Sphere& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Box& a, const Box& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Box& a, const OrientedBox& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Box& a, const ViewFrustum& b) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	OrientedBox intersects ...
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool Intersects(const OrientedBox& a, const Vec3& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const OrientedBox& a, const Triangle3D& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const OrientedBox& a, const Sphere& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const OrientedBox& a, const Box& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const OrientedBox& a, const OrientedBox& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const OrientedBox& a, const ViewFrustum& b) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	ViewFrustum intersects ...
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool Intersects(const ViewFrustum& a, const Vec3& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const ViewFrustum& a, const Triangle3D& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const ViewFrustum& a, const Sphere& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const ViewFrustum& a, const Box& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const ViewFrustum& a, const OrientedBox& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const ViewFrustum& a, const ViewFrustum& b) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	Sphere contains ...
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool Contains(const Sphere& a, const Vec3& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Sphere& a, const Triangle3D& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Sphere& a, const Sphere& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Sphere& a, const Box& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Sphere& a, const OrientedBox& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Sphere& a, const ViewFrustum& b) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	Box contains ...
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool Contains(const Box& a, const Vec3& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Box& a, const Triangle3D& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Box& a, const Sphere& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Box& a, const Box& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Box& a, const OrientedBox& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const Box& a, const ViewFrustum& b) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	OrientedBox contains ...
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool Contains(const OrientedBox& a, const Vec3& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const OrientedBox& a, const Triangle3D& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const OrientedBox& a, const Sphere& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const OrientedBox& a, const Box& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const OrientedBox& a, const OrientedBox& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const OrientedBox& a, const ViewFrustum& b) noexcept;
+
+		//////////////////////////////////////////////////
+		//
+		//	ViewFrustum contains ...
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		bool Contains(const ViewFrustum& a, const Vec3& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const ViewFrustum& a, const Triangle3D& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const ViewFrustum& a, const Sphere& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const ViewFrustum& a, const Box& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const ViewFrustum& a, const OrientedBox& b) noexcept;
+
+		[[nodiscard]]
+		bool Contains(const ViewFrustum& a, const ViewFrustum& b) noexcept;
+	}
+
+	namespace detail
+	{
+		[[nodiscard]]
+		Sphere ToSphere(const DirectX::BoundingSphere& sphere) noexcept;
+
+		[[nodiscard]]
+		Box ToBox(const DirectX::BoundingBox& box) noexcept;
+
+		[[nodiscard]]
+		OrientedBox ToOrientedBox(const DirectX::BoundingOrientedBox& box) noexcept;
+
+		[[nodiscard]]
+		DirectX::BoundingSphere FromSphere(const Sphere& sphere) noexcept;
+
+		[[nodiscard]]
+		DirectX::BoundingBox FromBox(const Box& box) noexcept;
+
+		[[nodiscard]]
+		DirectX::BoundingOrientedBox FromOrientedBox(const OrientedBox& box) noexcept;
 	}
 }
-
-# include "detail/Geometry3D.ipp"

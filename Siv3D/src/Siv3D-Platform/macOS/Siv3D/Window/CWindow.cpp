@@ -16,6 +16,7 @@
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Monitor.hpp>
+# include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/EngineOptions.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Profiler/IProfiler.hpp>
@@ -292,6 +293,11 @@ namespace s3d
 	bool CWindow::isToggleFullscreenEnabled() const
 	{
 		return false;
+	}
+
+	void CWindow::setTaskbarProgressBar(double)
+	{
+		// do nothing
 	}
 
 	void CWindow::updateState()

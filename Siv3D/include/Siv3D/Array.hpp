@@ -21,6 +21,7 @@
 	#	include <execution>
 	# endif
 # endif
+# include <unordered_set>
 # include "String.hpp"
 # include "Meta.hpp"
 # include "Threading.hpp"
@@ -665,6 +666,13 @@ namespace s3d
 		[[nodiscard]]
 		bool none(Fty f = Identity) const;
 
+		/// @brief 条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
+		auto partition(Fty f);
+
 		/// @brief 
 		/// @tparam Fty 
 		/// @tparam R 
@@ -919,6 +927,13 @@ namespace s3d
 		[[nodiscard]]
 		Array sorted() const&;
 
+		/// @brief 相対順序を保ちながら、条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 区分化された境界を指すイテレータ
+		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type>>* = nullptr>
+		auto stable_partition(Fty f);
+
 		/// @brief 
 		/// @return 
 		template <class T = Type, std::enable_if_t<Meta::HasLessThan_v<T>>* = nullptr>
@@ -1137,7 +1152,7 @@ namespace s3d
 		[[nodiscard]]
 		static Array IndexedGenerate(size_type size, Fty indexedGenerator);
 
-#if __cpp_impl_three_way_comparison
+#if __cpp_lib_three_way_comparison
 
 		[[nodiscard]]
 		auto operator <=>(const Array& rhs) const {
@@ -1179,11 +1194,14 @@ namespace s3d
 	inline void swap(Array<Type, Allocator>& a, Array<Type, Allocator>& b) noexcept;
 
 	// deduction guide
-	template <class Type>
-	Array(std::initializer_list<Type>)->Array<Type>;
+	template <class Type, class Allocator = std::allocator<Type>>
+	Array(std::initializer_list<Type>, const Allocator& = Allocator{}) -> Array<Type, Allocator>;
 
 	template <class ArrayIsh, std::enable_if_t<Meta::HasAsArray<ArrayIsh>::value>* = nullptr>
-	Array(const ArrayIsh& a)->Array<typename decltype(std::declval<ArrayIsh>().asArray())::value_type>;
+	Array(ArrayIsh&&) -> Array<typename std::remove_cvref_t<decltype(std::declval<ArrayIsh>().asArray())>::value_type, typename std::remove_cvref_t<decltype(std::declval<ArrayIsh>().asArray())>::allocator_type>;
+
+	template <class Iterator, class Allocator = std::allocator<typename std::iterator_traits<Iterator>::value_type>>
+	Array(Iterator, Iterator, const Allocator& = Allocator{}) -> Array<typename std::iterator_traits<Iterator>::value_type, Allocator>;
 
 	/// @brief 
 	/// @tparam T0 

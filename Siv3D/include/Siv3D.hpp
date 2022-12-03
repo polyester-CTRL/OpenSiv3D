@@ -162,6 +162,9 @@
 // 文字列ルックアップヘルパー | Heterogeneous lookup helper
 # include <Siv3D/HeterogeneousLookupHelper.hpp>
 
+// 順序付けテーブル | Ordered table
+# include <Siv3D/OrderedTable.hpp>
+
 // ハッシュテーブル | Hash table
 # include <Siv3D/HashTable.hpp>
 
@@ -1640,6 +1643,9 @@
 // 簡易的な GUI | Simple GUI widgets
 # include <Siv3D/SimpleGUI.hpp>
 
+// 簡易的なメニューバー | Simple Menu bar
+# include <Siv3D/SimpleMenuBar.hpp>
+
 // テキストの入力処理方式 | Text input mode
 # include <Siv3D/TextInputMode.hpp>
 
@@ -1778,6 +1784,14 @@
 
 //////////////////////////////////////////////////
 //
+//	トランプカード描画 | Palying Card
+//
+//////////////////////////////////////////////////
+
+# include <Siv3D/PlayingCard.hpp>
+
+//////////////////////////////////////////////////
+//
 //	アドオン | Add-on
 //
 //////////////////////////////////////////////////
@@ -1807,7 +1821,6 @@
 # include <Siv3D/Experimental/SevenSegment.hpp>
 # include <Siv3D/Experimental/SaturatedLinework.hpp>
 # include <Siv3D/Experimental/InputIcon.hpp>
-# include <Siv3D/Experimental/PlayingCard.hpp>
 
 //////////////////////////////////////////////////
 //

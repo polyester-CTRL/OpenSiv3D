@@ -112,6 +112,7 @@ namespace s3d
 		DrawableText,
 		Transformer2D,
 		ScopedViewport2D,
+		Camera2DParameters,
 		Camera2D,
 		Emoji,
 		Icon,
@@ -126,7 +127,11 @@ namespace s3d
 		SayBuffer,
 		Say_impl,
 		TextEditState,
+		LicenseInfo,
 
+		XInputVibration,
+		XInput_helper,
+		XInput_impl,
 	};
 
 	using AngelScript::asIScriptEngine;
@@ -226,12 +231,14 @@ namespace s3d
 	void RegisterInput(asIScriptEngine* engine);
 	void RegisterKeyboard(asIScriptEngine* engine);
 	void RegisterMouse(asIScriptEngine* engine);
+	void RegisterXInput(asIScriptEngine* engine);
 
 	void RegisterImageFormat(asIScriptEngine* engine);
 	void RegisterImage(asIScriptEngine* engine);
 
 	void RegisterTransformer2D(asIScriptEngine* engine);
 	void RegisterScopedViewport2D(asIScriptEngine* engine);
+	void RegisterCamera2DParameters(asIScriptEngine* engine);
 	void RegisterCameraControl(asIScriptEngine* engine);
 	void RegisterCamera2D(asIScriptEngine* engine);
 
@@ -264,6 +271,8 @@ namespace s3d
 	void RegisterTextInputMode(asIScriptEngine* engine);
 	void RegisterTextInput(asIScriptEngine* engine);
 	void RegisterTextEditState(asIScriptEngine* engine);
+	void RegisterLicenseInfo(asIScriptEngine* engine);
+	void RegisterLicenseManager(asIScriptEngine* engine);
 	void RegisterSimpleGUI(asIScriptEngine* engine);
 	void RegisterLanguageCode(asIScriptEngine* engine);
 	void RegisterTextToSpeech(asIScriptEngine* engine);
