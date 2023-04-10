@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -16,7 +16,8 @@
 namespace s3d
 {
 	AsyncHTTPTask::AsyncHTTPTask()
-		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>() } {}
+		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>() } 
+	{}
 
 	bool AsyncHTTPTask::isEmpty() const
 	{
@@ -74,13 +75,16 @@ namespace s3d
 	}
 
 	AsyncHTTPTask::AsyncHTTPTask(const URLView url, const FilePathView path)
-		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>(url, path) } {}
+		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>(url, path) } 
+	{
+		pImpl->send(none);
+	}
 
 	namespace Platform::Web::SimpleHTTP
 	{
 		AsyncTask<HTTPResponse> CreateAsyncTask(AsyncHTTPTask& httpTask)
 		{
-			return httpTask.pImpl->m_promise.get_future();
+			return httpTask.pImpl->CreateAsyncTask();
 		}
 	}
 }

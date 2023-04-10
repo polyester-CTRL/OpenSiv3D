@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -133,7 +133,7 @@ namespace s3d
 	template <class Reader, std::enable_if_t<std::is_base_of_v<IReader, Reader>>*>
 	inline JSON JSON::Load(Reader&& reader, const AllowExceptions allowExceptions)
 	{
-		return Load(std::make_shared<Reader>(std::move(reader)), allowExceptions);
+		return Load(std::make_unique<Reader>(std::move(reader)), allowExceptions);
 	}
 
 	SIV3D_CONCEPT_INTEGRAL_
@@ -167,5 +167,26 @@ namespace s3d
 		}
 
 		return none;
+	}
+
+	inline namespace Literals
+	{
+		inline namespace JSONLiterals
+		{
+			inline JSON operator ""_json(const char32_t* str, const size_t length)
+			{
+				return JSON::Parse(StringView{str, length});
+			}
+
+			inline JSONPointer operator ""_jsonPointer(const char32_t* str, const size_t length)
+			{
+				return JSONPointer{{str, length}};
+			}
+
+			inline JSONPointer operator ""_jsonPtr(const char32_t* str, const size_t length)
+			{
+				return JSONPointer{{str, length}};
+			}
+		}
 	}
 }

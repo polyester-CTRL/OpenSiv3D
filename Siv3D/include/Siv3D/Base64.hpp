@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "String.hpp"
 # include "Blob.hpp"
+# include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
@@ -39,14 +40,18 @@ namespace s3d
 
 		/// @brief Base64 データをデコードします。
 		/// @param base64 入力 Base64
+		/// @param skipValidation 妥当性をチェックするかどうか
+		/// @throw Error 妥当性チェックが有効で、不正な入力が見つかった場合
 		/// @return デコードされたデータ
 		[[nodiscard]]
-		Blob Decode(StringView base64);
+		Blob Decode(StringView base64, SkipValidation skipValidation = SkipValidation::No);
 
 		/// @brief Base64 データをデコードします。
 		/// @param base64 入力 Base64
+		/// @param skipValidation 妥当性をチェックするかどうか
+		/// @throw Error 妥当性チェックが有効で、不正な入力が見つかった場合
 		/// @return デコードされたデータ
 		[[nodiscard]]
-		Blob Decode(std::string_view base64);
+		Blob Decode(std::string_view base64, SkipValidation skipValidation = SkipValidation::No);
 	}
 }

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -15,15 +15,25 @@
 # include "HTTPResponse.hpp"
 # include "URLView.hpp"
 # include "AsyncTask.hpp"
+# include "HashTable.hpp"
 
 namespace s3d
 {
 	class AsyncHTTPTask;
 	class AsyncHTTPTaskDetail;
+	class Blob;
+	class MemoryViewReader;
+	class JSON;
 
 	namespace SimpleHTTP
 	{
-		AsyncHTTPTask SaveAsync(URLView url, FilePathView filePath);
+		AsyncHTTPTask GetAsync(URLView url, const HashTable<String, String>& headers, FilePathView filePath);
+
+		AsyncHTTPTask GetAsync(URLView url, const HashTable<String, String>& headers);
+
+		AsyncHTTPTask PostAsync(URLView url, const HashTable<String, String>& headers, const void* src, size_t size, FilePathView filePath);
+
+		AsyncHTTPTask PostAsync(URLView url, const HashTable<String, String>& headers, const void* src, size_t size);
 	}
 
 # if SIV3D_PLATFORM(WEB)
@@ -101,11 +111,54 @@ namespace s3d
 		[[nodiscard]]
 		const HTTPResponse& getResponse();
 
+		/// @brief ダウンロード先がファイルであるかを返します。
+		/// @return ダウンロード先がファイルの場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool isFile() const;
+
+		/// @brief ダウンロード先がメモリであるかを返します。
+		/// @return ダウンロード先がメモリの場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool isBlob() const;
+
+		/// @brief ダウンロード先のファイルパスを返します。
+		/// @return ダウンロード内容を保存したファイルパス。メモリへのダウンロードの場合は空の文字列。
+		[[nodiscard]]
+		const FilePath& getFilePath() const;
+
+		/// @brief ダウンロードしたデータを返します。
+		/// @return ダウンロード内容を保存したバイナリデータ。ファイルへのダウンロードの場合は空のバイナリデータ。
+		[[nodiscard]]
+		const Blob& getBlob() const;
+
+		/// @brief ダウンロードしたデータを読み込む MemoryViewReader を返します。
+		/// @return ダウンロード内容を保存したバイナリデータに対する MemoryViewReader, ファイルへのダウンロードの場合は空の MemoryViewReader.
+		[[nodiscard]]
+		MemoryViewReader getBlobReader() const;
+
+		/// @brief ダウンロードしたデータを JSON としてパースした結果を返します。
+		/// @return ダウンロード内容を JSON と解釈した結果
+		/// @remark ダウンロード先がファイルであっても、メモリであっても使用できます。
+		[[nodiscard]]
+		JSON getAsJSON() const;
+
 	private:
 
-		AsyncHTTPTask(URLView url, FilePathView path);
+		AsyncHTTPTask(URLView url, const HashTable<String, String>& headers, FilePathView path);
 
-		friend AsyncHTTPTask SimpleHTTP::SaveAsync(URLView url, FilePathView filePath);
+		AsyncHTTPTask(URLView url, const HashTable<String, String>& headers);
+
+		AsyncHTTPTask(URLView url, const HashTable<String, String>& headers, const void* src, size_t size, FilePathView path);
+
+		AsyncHTTPTask(URLView url, const HashTable<String, String>& headers, const void* src, size_t size);
+
+		friend AsyncHTTPTask SimpleHTTP::GetAsync(URLView url, const HashTable<String, String>& headers, FilePathView filePath);
+
+		friend AsyncHTTPTask SimpleHTTP::GetAsync(URLView url, const HashTable<String, String>& headers);
+
+		friend AsyncHTTPTask SimpleHTTP::PostAsync(URLView url, const HashTable<String, String>& headers, const void* src, size_t size, FilePathView filePath);
+
+		friend AsyncHTTPTask SimpleHTTP::PostAsync(URLView url, const HashTable<String, String>& headers, const void* src, size_t size);
 
 	# if SIV3D_PLATFORM(WEB)
 		friend AsyncTask<HTTPResponse> Platform::Web::SimpleHTTP::CreateAsyncTask(AsyncHTTPTask& httpTask);

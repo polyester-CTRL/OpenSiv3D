@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -138,7 +138,7 @@ namespace s3d
 
 	inline MultiPolygon::value_type MultiPolygon::at(const size_t index)&&
 	{
-		return m_data.at(index);
+		return std::move(m_data.at(index));
 	}
 
 	inline MultiPolygon::value_type& MultiPolygon::operator[](const size_t index) & noexcept

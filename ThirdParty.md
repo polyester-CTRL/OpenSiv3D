@@ -48,21 +48,23 @@ Name | Version
 [Lua](https://www.lua.org/) | 5.4.2
 [lunasvg](https://github.com/sammycage/lunasvg) | v2.3.1
 [M+ Fonts](https://mplus-fonts.osdn.jp/) | 063a
-[Material Design Icons](https://github.com/Templarian/MaterialDesign) | v6.5.95
+[Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.2.96
 [miniutf](https://github.com/dropbox/miniutf) | 
 [minizip](https://github.com/zlib-ng/minizip-ng) | 2.9.2
+[Modern C++ JSON schema validator](https://github.com/pboettch/json-schema-validator) | v2.2.0
 [msdfgen](https://github.com/Chlumsky/msdfgen) | v1.8
 [muparser](https://github.com/beltoforion/muparser) | 2.3.3
 [nanoflann](https://github.com/jlblancoc/nanoflann) | v1.4.2
 [Native File Dialog Extended](https://github.com/btzy/nativefiledialog-extended) | 
 [nlohmann/json](https://github.com/nlohmann/json) | v3.10.5
 [Noto CJK](https://github.com/googlefonts/noto-cjk) | v20201206
-[Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.034
+[Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.038
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.5_rev1
 [OpenCV](https://github.com/opencv/opencv) | 4.5.1
 [Opus](https://opus-codec.org/downloads/) | 1.3.1
 [opusfile](https://opus-codec.org/downloads/) | 0.12
+[oscpack](http://www.rossbencina.com/code/oscpack) | 1.1.0
 [par_octasphere](https://github.com/prideout/par/blob/master/par_octasphere.h) | 
 [par_shapes](https://github.com/prideout/par/blob/master/par_shapes.h) | 
 [pffft](https://bitbucket.org/jpommier/pffft/src/master/) | 

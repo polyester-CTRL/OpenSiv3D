@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -48,6 +48,12 @@ namespace s3d
 		{
 			::glDeleteSamplers(1, &m_sampler);
 			m_sampler = 0;
+		}
+
+		if (m_placeHolderVertexBuffer)
+		{
+			::glDeleteBuffers(1, &m_placeHolderVertexBuffer);
+			m_placeHolderVertexBuffer = 0;
 		}
 
 		if (m_vertexArray)
@@ -135,7 +141,13 @@ namespace s3d
 		// full screen triangle
 		{
 			::glGenVertexArrays(1, &m_vertexArray);
+			::glGenBuffers(1, &m_placeHolderVertexBuffer);
 			::glBindVertexArray(m_vertexArray);
+
+			::glEnableVertexAttribArray(0);
+			::glBindBuffer(GL_ARRAY_BUFFER, m_placeHolderVertexBuffer);
+			::glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * 3, nullptr, GL_STATIC_DRAW);
+			::glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 			::glGenSamplers(1, &m_sampler);
 			::glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -350,6 +362,24 @@ namespace s3d
 	void CRenderer2D_GLES3::addCircleArc(const LineStyle& style, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& innerColor, const Float4& outerColor)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(m_bufferCreator, style, center, rInner, startAngle, angle, thickness, innerColor, outerColor, getMaxScaling()))
+		{
+			if (not m_currentCustomVS)
+			{
+				m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			}
+
+			if (not m_currentCustomPS)
+			{
+				m_commandManager.pushStandardPS(m_standardPS->shapeID);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_GLES3::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(m_bufferCreator, center, r, startAngle, angle, color, getMaxScaling()))
 		{
 			if (not m_currentCustomVS)
 			{

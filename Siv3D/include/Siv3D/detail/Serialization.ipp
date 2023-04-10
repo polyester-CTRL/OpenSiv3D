@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -772,5 +772,23 @@ namespace s3d
 		Blob binary(static_cast<size_t>(binarySize));
 		archive(cereal::binary_data(binary.data(), binary.size()));
 		image = Image{ MemoryReader{ std::move(binary) } };
+	}
+
+	//////////////////////////////////////////////////////
+	//
+	//	TextEditState
+	//
+	template <class Archive>
+	inline void SIV3D_SERIALIZE_SAVE(Archive& archive, const TextEditState& value)
+	{
+		archive(value.text);
+	}
+
+	template <class Archive>
+	inline void SIV3D_SERIALIZE_LOAD(Archive& archive, TextEditState& value)
+	{
+		String text;
+		archive(text);
+		value = TextEditState{ std::move(text) };
 	}
 }

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -410,6 +410,54 @@ namespace s3d
 			static_cast<float>(innerThickness + outerThickness),
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
+		);
+
+		return *this;
+	}
+
+	const Circle& Circle::drawSegment(const double arcMidpointAngle, const double height, const ColorF& color) const
+	{
+		if ((height <= 0.0) || (r <= 0.0))
+		{
+			return *this;
+		}
+
+		if ((r * 2.0) <= height)
+		{
+			return draw(color);
+		}
+
+		const float arcAngleHalf = std::acos(1.0f - (static_cast<float>(height) / static_cast<float>(r)));
+
+		SIV3D_ENGINE(Renderer2D)->addCircleSegment(
+			center,
+			static_cast<float>(r),
+			static_cast<float>(arcMidpointAngle - arcAngleHalf),
+			static_cast<float>(arcAngleHalf * 2.0f),
+			color.toFloat4()
+		);
+
+		return *this;
+	}
+
+	const Circle& Circle::drawSegmentFromAngles(const double startAngle, const double angle, const ColorF& color) const
+	{
+		if (angle <= 0.0)
+		{
+			return *this;
+		}
+
+		if (Math::TwoPi <= angle)
+		{
+			return draw(color);
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addCircleSegment(
+			center,
+			static_cast<float>(r),
+			static_cast<float>(startAngle),
+			static_cast<float>(angle),
+			color.toFloat4()
 		);
 
 		return *this;

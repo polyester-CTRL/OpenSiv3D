@@ -2,13 +2,14 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
+# include <sstream>
 # include <Siv3D/InputGroups.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
@@ -211,5 +212,43 @@ namespace s3d
 	void Formatter(FormatData& formatData, const Input& value)
 	{
 		Formatter(formatData, value.name());
+	}
+
+	String Input::Serialize(const Input& input)
+	{
+		if (input.playerIndex())
+		{
+			return U"({}, {}, {})"_fmt(FromEnum(input.deviceType()), input.code(), input.playerIndex());
+		}
+		else
+		{
+			return U"({}, {})"_fmt(FromEnum(input.deviceType()), input.code());
+		}
+	}
+
+	Input Input::Deserialize(const StringView s)
+	{
+		std::istringstream is{ s.toUTF8() };
+
+		char unused;
+		is >> unused;
+
+		uint32 values[3];
+		is
+			>> values[0] >> unused
+			>> values[1] >> unused;
+
+		if (unused == ',')
+		{
+			is >> values[2] >> unused;
+		}
+		else
+		{
+			values[2] = 0;
+		}
+
+		return Input{ ToEnum<InputDeviceType>(static_cast<uint8>(values[0])),
+			static_cast<uint8>(values[1]),
+			static_cast<uint8>(values[2]) };
 	}
 }

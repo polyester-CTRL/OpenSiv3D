@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -486,7 +486,7 @@ namespace s3d
 
 	inline String::value_type String::operator[](const size_t offset) && noexcept
 	{
-		return std::move(m_string[offset]);
+		return m_string[offset];
 	}
 
 	inline void String::push_front(const value_type ch)
@@ -622,6 +622,12 @@ namespace s3d
 	inline void String::swap(String& other) noexcept
 	{
 		m_string.swap(other.m_string);
+	}
+
+	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32>>*>
+	inline bool String::contains_if(Fty f) const
+	{
+		return any(f);
 	}
 
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32>>*>
@@ -825,7 +831,7 @@ namespace s3d
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32>>*>
 	inline String String::replaced_if(Fty f, const value_type newChar) const&
 	{
-		return String(*this).replace_if(f, newChar);
+		return std::move(String(*this).replace_if(f, newChar));
 	}
 
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32>>*>
@@ -875,7 +881,7 @@ namespace s3d
 	SIV3D_CONCEPT_URBG_
 	inline String String::shuffled(URBG&& rbg) const&
 	{
-		return String(*this).shuffle(std::forward<URBG>(rbg));
+		return std::move(String(*this).shuffle(std::forward<URBG>(rbg)));
 	}
 
 	SIV3D_CONCEPT_URBG_
@@ -897,7 +903,7 @@ namespace s3d
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32, char32>>*>
 	inline String String::sorted_by(Fty f) const&
 	{
-		return String(*this).sort_by(f);
+		return std::move(String(*this).sort_by(f));
 	}
 
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, char32, char32>>*>

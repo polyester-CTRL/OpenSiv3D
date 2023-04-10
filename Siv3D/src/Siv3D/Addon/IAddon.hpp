@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -23,7 +23,7 @@ namespace s3d
 
 		virtual ~ISiv3DAddon() = default;
 
-		virtual bool add(StringView name, std::unique_ptr<IAddon>&& addon, int32 priority) = 0;
+		virtual bool add(StringView name, std::unique_ptr<IAddon>&& addon, int32 updatePriority, int32 drawPriority) = 0;
 
 		virtual void remove(StringView name) = 0;
 
@@ -36,5 +36,7 @@ namespace s3d
 		virtual bool update() = 0;
 
 		virtual void draw() const = 0;
+
+		virtual void postPresent() = 0;
 	};
 }

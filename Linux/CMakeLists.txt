@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 project(OpenSiv3D_Linux
-    VERSION 0.6.6
+    VERSION 0.6.8
     LANGUAGES CXX C ASM
     HOMEPAGE_URL "https://github.com/Siv3D/OpenSiv3D"
     DESCRIPTION "A C++20 framework for creative coding (2D/3D games, media art, visualizers, and simulators)."
@@ -84,6 +84,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D-Platform/Linux/Siv3D/Mesh/MeshFactory.cpp
   ../Siv3D/src/Siv3D-Platform/Linux/Siv3D/MessageBox/SivMessageBox_Linux.cpp
   ../Siv3D/src/Siv3D-Platform/Linux/Siv3D/Monitor/SivMonitor_Linux.cpp
+  ../Siv3D/src/Siv3D-Platform/Linux/Siv3D/Network/SivNetwork_Linux.cpp
   ../Siv3D/src/Siv3D-Platform/Linux/Siv3D/PowerStatus/SivPowerStatus.cpp
   ../Siv3D/src/Siv3D-Platform/Linux/Siv3D/Renderer/GL4/CRenderer_GL4.cpp
   ../Siv3D/src/Siv3D-Platform/Linux/Siv3D/Renderer/GLES3/CRenderer_GLES3.cpp
@@ -110,6 +111,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/Date/SivDate_macOS_Linux.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/DateTime/SivDateTime_macOS_Linux.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/DLL/SivDLL.cpp
+  ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/DriveInfo/SivDriveInfo.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/EnvironmentVariable/SivEnvironmentVariable.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/Gamepad/CGamepad.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/Keyboard/CKeyboard.cpp
@@ -408,8 +410,15 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/Network/NetworkFactory.cpp
   ../Siv3D/src/Siv3D/Network/SivNetwork.cpp
   ../Siv3D/src/Siv3D/None/SivNone.cpp
+  ../Siv3D/src/Siv3D/OpenAI/SivOpenAI.cpp
   ../Siv3D/src/Siv3D/OpenCV_Bridge/SivOpenCV_Bridge.cpp
   ../Siv3D/src/Siv3D/OrientedBox/SivOrientedBox.cpp
+  ../Siv3D/src/Siv3D/OSCMessage/OSCMessageDetail.cpp
+  ../Siv3D/src/Siv3D/OSCMessage/SivOSCMessage.cpp
+  ../Siv3D/src/Siv3D/OSCReceiver/OSCPacketListener.cpp
+  ../Siv3D/src/Siv3D/OSCReceiver/OSCReceiverDetail.cpp
+  ../Siv3D/src/Siv3D/OSCReceiver/SivOSCReceiver.cpp
+  ../Siv3D/src/Siv3D/OSCSender/SivOSCSender.cpp
   ../Siv3D/src/Siv3D/Parse/SivParse.cpp
   ../Siv3D/src/Siv3D/ParseBool/SivParseBool.cpp
   ../Siv3D/src/Siv3D/ParseFloat/SivParseFloat.cpp
@@ -1012,6 +1021,13 @@ set(SIV3D_INTERNAL_SOURCES
 
   ../Siv3D/src/ThirdParty/nativefiledialog-extended/nfd_gtk.cpp
 
+  ../Siv3D/src/ThirdParty/nlohmann/json-patch.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/json-schema-draft7.json.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/json-uri.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/json-validator.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/smtp-address-validator.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/string-format-check.cpp
+
   ../Siv3D/src/ThirdParty/Oniguruma/ascii.c
   ../Siv3D/src/ThirdParty/Oniguruma/big5.c
   ../Siv3D/src/ThirdParty/Oniguruma/cp1251.c
@@ -1060,6 +1076,14 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/ThirdParty/Oniguruma/utf32_be.c
   ../Siv3D/src/ThirdParty/Oniguruma/utf32_le.c
   ../Siv3D/src/ThirdParty/Oniguruma/utf8.c
+
+  ../Siv3D/src/ThirdParty/oscpack/ip/IpEndpointName.cpp
+  ../Siv3D/src/ThirdParty/oscpack/ip/posix/NetworkingUtils.cpp
+  ../Siv3D/src/ThirdParty/oscpack/ip/posix/UdpSocket.cpp
+  ../Siv3D/src/ThirdParty/oscpack/osc/OscOutboundPacketStream.cpp
+  ../Siv3D/src/ThirdParty/oscpack/osc/OscPrintReceivedElements.cpp
+  ../Siv3D/src/ThirdParty/oscpack/osc/OscReceivedElements.cpp
+  ../Siv3D/src/ThirdParty/oscpack/osc/OscTypes.cpp
 
   ../Siv3D/src/ThirdParty/pffft/pffft.c
 

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -474,8 +474,11 @@
 // INI データの読み書き | INI reader/writer
 # include <Siv3D/INI.hpp>
 
-// JSON データの書き出し | JSON reader/writer
+// JSON データの読み書き | JSON reader/writer
 # include <Siv3D/JSON.hpp>
+
+// JSON データの検証 | JSON validation
+# include <Siv3D/JSONValidator.hpp>
 
 // XML ファイルの読み込み | XML parser
 # include <Siv3D/XMLReader.hpp>
@@ -867,6 +870,12 @@
 // クリップボード | Clipboard
 # include <Siv3D/Clipboard.hpp>
 
+// ドライブの種類 | Drive type
+# include <Siv3D/DriveType.hpp>
+
+// ドライブの情報 | Drive information
+# include <Siv3D/DriveInfo.hpp>
+
 //////////////////////////////////////////////////
 //
 //	ネットワーク | Network
@@ -896,6 +905,30 @@
 
 // TCP クライアント | TCP client
 # include <Siv3D/TCPClient.hpp>
+
+//////////////////////////////////////////////////
+//
+//	OSC 通信 | OSC Communication
+//
+//////////////////////////////////////////////////
+
+// OSC 型タグ
+# include <Siv3D/OSCTypeTag.hpp>
+
+// OSC 送信メッセージ
+# include <Siv3D/OSCMessage.hpp>
+
+// OSC 送信クラス
+# include <Siv3D/OSCSender.hpp>
+
+// OSC 受信メッセージの引数
+# include <Siv3D/OSCArgument.hpp>
+
+// OSC 受信メッセージ
+# include <Siv3D/ReceivedOSCMessage.hpp>
+
+// OSC 受信クラス
+# include <Siv3D/OSCReceiver.hpp>
 
 //////////////////////////////////////////////////
 //
@@ -1792,6 +1825,14 @@
 
 //////////////////////////////////////////////////
 //
+//	OpenAI API | OpenAI API
+//
+//////////////////////////////////////////////////
+
+# include <Siv3D/OpenAI.hpp>
+
+//////////////////////////////////////////////////
+//
 //	アドオン | Add-on
 //
 //////////////////////////////////////////////////
@@ -1840,6 +1881,8 @@
 	# include <emscripten.h>
 
 # endif
+
+# include <Siv3D/Browser.hpp>
 
 //////////////////////////////////////////////////
 //

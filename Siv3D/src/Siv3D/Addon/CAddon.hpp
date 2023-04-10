@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -22,14 +22,13 @@ namespace s3d
 
 		String name;
 
-		int32 priority = 0;
+		int32 updatePriority = 0;
+
+		int32 drawPriority = 0;
 
 		AddonData() = default;
 
-		AddonData(std::unique_ptr<IAddon>&& _pAddon, StringView _name, int32 _priority)
-			: pAddon{ std::move(_pAddon) }
-			, name{ _name }
-			, priority{ _priority } {}
+		AddonData(std::unique_ptr<IAddon>&& _pAddon, StringView _name, int32 _updatePriority, int32 _drawPriority);
 	};
 
 	class CAddon final : public ISiv3DAddon
@@ -38,9 +37,13 @@ namespace s3d
 
 		Array<AddonData> m_addons;
 
+		Array<std::pair<size_t, int32>> m_updateIndices;
+
+		Array<std::pair<size_t, int32>> m_drawIndices;
+
 	public:
 
-		bool add(StringView name, std::unique_ptr<IAddon>&& addon, int32 priority) override;
+		bool add(StringView name, std::unique_ptr<IAddon>&& addon, int32 updatePriority, int32 drawPriority) override;
 
 		void remove(StringView name) override;
 
@@ -53,5 +56,7 @@ namespace s3d
 		bool update() override;
 
 		void draw() const override;
+
+		void postPresent() override;
 	};
 }

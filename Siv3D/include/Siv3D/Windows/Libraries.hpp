@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -26,9 +26,11 @@
 # pragma comment (lib, "imm32")
 # pragma comment (lib, "mfuuid")
 # pragma comment (lib, "opengl32")
+# pragma comment (lib, "Secur32")
 # pragma comment (lib, "Setupapi")
 # pragma comment (lib, "version")
 # pragma comment (lib, "winmm")
+# pragma comment (lib, "wininet")
 # pragma comment (lib, "Ws2_32")
 # pragma comment (lib, "curl/libcurl" SIV3D_DEBUG_LIB_POSTFIX(-d))
 # pragma comment (lib, "freetype/freetype" SIV3D_DEBUG_LIB_POSTFIX(d))

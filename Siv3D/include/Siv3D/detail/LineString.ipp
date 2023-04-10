@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -168,7 +168,7 @@ namespace s3d
 
 	inline LineString::value_type LineString::operator[](const size_t index) && noexcept
 	{
-		return std::move(m_data[index]);
+		return m_data[index];
 	}
 
 	inline void LineString::push_front(const value_type& value)

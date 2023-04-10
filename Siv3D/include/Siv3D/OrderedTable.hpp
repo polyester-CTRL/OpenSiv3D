@@ -1,9 +1,9 @@
-//-----------------------------------------------
+ï»¿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -23,11 +23,11 @@ SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {
-	/// @brief ƒe[ƒuƒ‹
-	/// @tparam Key ƒL[‚ÌŒ^
-	/// @tparam Value ’l‚ÌŒ^
-	/// @tparam Compare ƒL[‚Ì”äŠrŠÖ”‚ÌŒ^
-	/// @tparam Alloc ƒAƒƒP[ƒ^‚ÌŒ^
+	/// @brief ãƒ†ãƒ¼ãƒ–ãƒ«
+	/// @tparam Key ã‚­ãƒ¼ã®å‹
+	/// @tparam Value å€¤ã®å‹
+	/// @tparam Compare ã‚­ãƒ¼ã®æ¯”è¼ƒé–¢æ•°ã®å‹
+	/// @tparam Alloc ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ã®å‹
 	template <class Key, class Value,
 		class Compare = phmap::Less<Key>,
 		class Alloc = phmap::priv::Allocator<phmap::priv::Pair<const Key, Value>>>

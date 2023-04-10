@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,6 +11,8 @@
 
 # include <Siv3D/Common.hpp>
 # include <Siv3D/AsyncHTTPTask.hpp>
+# include <Siv3D/MemoryViewReader.hpp>
+# include <Siv3D/JSON.hpp>
 # include "AsyncHTTPTaskDetail.hpp"
 
 namespace s3d
@@ -73,6 +75,54 @@ namespace s3d
 		return pImpl->getResponse();
 	}
 
-	AsyncHTTPTask::AsyncHTTPTask(const URLView url, const FilePathView path)
-		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>(url, path) } {}
+	bool AsyncHTTPTask::isFile() const
+	{
+		return pImpl->isFile();
+	}
+
+	bool AsyncHTTPTask::isBlob() const
+	{
+		return (not pImpl->isFile());
+	}
+
+	const FilePath& AsyncHTTPTask::getFilePath() const
+	{
+		return pImpl->getFilePath();
+	}
+
+	const Blob& AsyncHTTPTask::getBlob() const
+	{
+		return pImpl->getBlob();
+	}
+
+	MemoryViewReader AsyncHTTPTask::getBlobReader() const
+	{
+		const Blob& blob = pImpl->getBlob();
+
+		return{ blob.data(), blob.size_bytes() };
+	}
+
+	JSON AsyncHTTPTask::getAsJSON() const
+	{
+		if (pImpl->isFile())
+		{
+			return JSON::Load(getFilePath());
+		}
+		else
+		{
+			return JSON::Load(getBlobReader());
+		}
+	}
+
+	AsyncHTTPTask::AsyncHTTPTask(const URLView url, const HashTable<String, String>& headers, const FilePathView path)
+		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>(url, headers, path) } {}
+
+	AsyncHTTPTask::AsyncHTTPTask(const URLView url, const HashTable<String, String>& headers)
+		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>(url, headers) } {}
+
+	AsyncHTTPTask::AsyncHTTPTask(const URLView url, const HashTable<String, String>& headers, const void* src, const size_t size, const FilePathView path)
+		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>(url, headers, src, size, path) } {}
+
+	AsyncHTTPTask::AsyncHTTPTask(const URLView url, const HashTable<String, String>& headers, const void* src, const size_t size)
+		: pImpl{ std::make_shared<AsyncHTTPTaskDetail>(url, headers, src, size) } {}
 }

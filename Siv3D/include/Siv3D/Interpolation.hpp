@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -81,6 +81,9 @@ namespace s3d
 
 		[[nodiscard]]
 		Vec4 Damp(const Vec4& a, const Vec4& b, double r, double dt);
+
+		[[nodiscard]]
+		ColorF Damp(const ColorF& a, const ColorF& b, double r, double dt);
 
 		/// @brief 目標地点に向かってスムーズに移動させます。
 		/// @param from 現在地
@@ -169,6 +172,17 @@ namespace s3d
 		/// @return 新しい現在地
 		[[nodiscard]]
 		Vec4 SmoothDamp(const Vec4& from, const Vec4& to, Vec4& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
+
+		/// @brief 目標の色に向かってスムーズに移動させます。
+		/// @param from 現在の色
+		/// @param to 目標の色
+		/// @param velocity 現在の変化速度
+		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
+		/// @param maxSpeed 最大速度。無制限の場合は unspecified
+		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @return 新しい色
+		[[nodiscard]]
+		ColorF SmoothDamp(const ColorF& from, const ColorF& to, ColorF& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
 	}
 }
 

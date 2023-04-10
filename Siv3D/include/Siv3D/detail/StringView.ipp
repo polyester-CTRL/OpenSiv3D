@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -197,6 +197,16 @@ namespace s3d
 	inline constexpr int32 StringView::compare(const size_type pos1, const size_type n1, const value_type* s, const size_type n2) const noexcept
 	{
 		return m_view.compare(pos1, n1, s, n2);
+	}
+
+	inline constexpr bool StringView::contains(const value_type ch) const noexcept
+	{
+		return (indexOf(ch) != StringView::npos);
+	}
+
+	inline constexpr bool StringView::contains(const StringView s) const noexcept
+	{
+		return (indexOf(s) != StringView::npos);
 	}
 
 	inline constexpr bool StringView::starts_with(const value_type ch) const noexcept

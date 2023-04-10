@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -27,14 +27,19 @@ namespace s3d
 		HTTPResponse() = default;
 
 		/// @brief HTTP レスポンスからステータスとヘッダを取得します。
-		/// @param response HTTP レスポンス
+		/// @param responsesHeaders HTTP レスポンス
 		SIV3D_NODISCARD_CXX20
-		explicit HTTPResponse(const std::string& response);
+		explicit HTTPResponse(const std::string& responseHeaders);
 
 		/// @brief ステータスコードを返します。
 		/// @return ステータスコード
 		[[nodiscard]]
 		HTTPStatusCode getStatusCode() const noexcept;
+
+		/// @brief ステータスコードを `int32` 型で返します。
+		/// @return ステータスコード
+		[[nodiscard]]
+		int32 getStatusCodeInt() const noexcept;
 
 		/// @brief ステータス行を返します。
 		/// @return ステータス行

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -20,6 +20,9 @@
 # include <Siv3D/HTTPAsyncStatus.hpp>
 # include <Siv3D/HTTPProgress.hpp>
 # include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/MemoryWriter.hpp>
+# include <Siv3D/HashTable.hpp>
+# include <Siv3D/Blob.hpp>
 
 namespace s3d
 {
@@ -31,7 +34,16 @@ namespace s3d
 		AsyncHTTPTaskDetail();
 
 		SIV3D_NODISCARD_CXX20
-		AsyncHTTPTaskDetail(URLView url, FilePathView path);
+		AsyncHTTPTaskDetail(URLView url, const HashTable<String, String>& headers, FilePathView path);
+
+		SIV3D_NODISCARD_CXX20
+		AsyncHTTPTaskDetail(URLView url, const HashTable<String, String>& headers);
+
+		SIV3D_NODISCARD_CXX20
+		AsyncHTTPTaskDetail(URLView url, const HashTable<String, String>& headers, const void* src, size_t size, FilePathView path);
+
+		SIV3D_NODISCARD_CXX20
+		AsyncHTTPTaskDetail(URLView url, const HashTable<String, String>& headers, const void* src, size_t size);
 
 		~AsyncHTTPTaskDetail();
 
@@ -45,6 +57,15 @@ namespace s3d
 
 		[[nodiscard]]
 		const HTTPResponse& getResponse();
+		
+		[[nodiscard]]
+		bool isFile() const;
+
+		[[nodiscard]]
+		const FilePath& getFilePath() const;
+
+		[[nodiscard]]
+		const Blob& getBlob() const;
 
 		[[nodiscard]]
 		HTTPAsyncStatus getStatus();
@@ -61,7 +82,11 @@ namespace s3d
 
 	private:
 
-		HTTPResponse run();
+		void close();
+
+		HTTPResponse runGet();
+
+		HTTPResponse runPost();
 
 		////
 		//
@@ -75,7 +100,33 @@ namespace s3d
 
 		std::atomic<bool> m_abort = false;
 
-		BinaryWriter m_writer;
+		struct
+		{
+			BinaryWriter file;
+
+			FilePath path;
+
+			MemoryWriter memory;
+
+			bool isFile = true;
+
+			IWriter* getIWriter()
+			{
+				if (isFile)
+				{
+					return &file;
+				}
+				else
+				{
+					return &memory;
+				}
+			}
+
+		} m_writer;
+
+		HashTable<String, String> m_headers;
+
+		Blob m_blob;
 
 		AsyncTask<HTTPResponse> m_task;
 

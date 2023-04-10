@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -127,7 +127,7 @@ namespace s3d
 			// ヘッダの追加
 			::curl_slist* header_slist = nullptr;
 			{
-				for (auto [key, value] : headers)
+				for (auto&& [key, value] : headers)
 				{
 					const std::string header = (key.toUTF8() + ": " + value.toUTF8());
 					header_slist = ::curl_slist_append(header_slist, header.c_str());
@@ -142,10 +142,10 @@ namespace s3d
 			::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &writer);
 
 			// レスポンスヘッダーの設定
-			std::string responseHeader;
+			std::string responseHeaders;
 			{
 				::curl_easy_setopt(curl, ::CURLOPT_HEADERFUNCTION, detail::HeaderCallback);
-				::curl_easy_setopt(curl, ::CURLOPT_HEADERDATA, &responseHeader);
+				::curl_easy_setopt(curl, ::CURLOPT_HEADERDATA, &responseHeaders);
 			}
 
 			const ::CURLcode result = ::curl_easy_perform(curl);
@@ -158,7 +158,7 @@ namespace s3d
 				return{};
 			}
 
-			return HTTPResponse{ responseHeader };
+			return HTTPResponse{ responseHeaders };
 		}
 
 		HTTPResponse Post(const URLView url, const HashTable<String, String>& headers, const void* src, const size_t size, const FilePathView filePath)
@@ -216,7 +216,7 @@ namespace s3d
 			// ヘッダの追加
 			::curl_slist* header_slist = nullptr;
 			{
-				for (auto [key, value] : headers)
+				for (auto&& [key, value] : headers)
 				{
 					const std::string header = (key.toUTF8() + ": " + value.toUTF8());
 					header_slist = ::curl_slist_append(header_slist, header.c_str());
@@ -234,10 +234,10 @@ namespace s3d
 			::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &writer);
 
 			// レスポンスヘッダーの設定
-			std::string responseHeader;
+			std::string responseHeaders;
 			{
 				::curl_easy_setopt(curl, ::CURLOPT_HEADERFUNCTION, detail::HeaderCallback);
-				::curl_easy_setopt(curl, ::CURLOPT_HEADERDATA, &responseHeader);
+				::curl_easy_setopt(curl, ::CURLOPT_HEADERDATA, &responseHeaders);
 			}
 
 			const ::CURLcode result = ::curl_easy_perform(curl);
@@ -250,14 +250,45 @@ namespace s3d
 				return{};
 			}
 
-			return HTTPResponse{ responseHeader };
+			return HTTPResponse{ responseHeaders };
 		}
 
 		AsyncHTTPTask SaveAsync(const URLView url, const FilePathView filePath)
 		{
+			return GetAsync(url, {}, filePath);
+		}
+
+		AsyncHTTPTask LoadAsync(const URLView url)
+		{
+			return GetAsync(url, {});
+		}
+
+		AsyncHTTPTask GetAsync(const URLView url, const HashTable<String, String>& headers, const FilePathView filePath)
+		{
 			SIV3D_ENGINE(Network)->init();
 
-			return AsyncHTTPTask{ url, filePath };
+			return AsyncHTTPTask{ url, headers, filePath };
+		}
+
+		AsyncHTTPTask GetAsync(const URLView url, const HashTable<String, String>& headers)
+		{
+			SIV3D_ENGINE(Network)->init();
+
+			return AsyncHTTPTask{ url, headers };
+		}
+
+		AsyncHTTPTask PostAsync(const URLView url, const HashTable<String, String>& headers, const void* src, const size_t size, const FilePathView filePath)
+		{
+			SIV3D_ENGINE(Network)->init();
+
+			return AsyncHTTPTask{ url, headers, src, size, filePath };
+		}
+
+		AsyncHTTPTask PostAsync(const URLView url, const HashTable<String, String>& headers, const void* src, const size_t size)
+		{
+			SIV3D_ENGINE(Network)->init();
+
+			return AsyncHTTPTask{ url, headers, src, size };
 		}
 	}
 }

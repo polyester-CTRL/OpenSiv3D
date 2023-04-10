@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -1251,6 +1251,49 @@ namespace s3d
 		}
 
 		SIV3D_MATH_FUNCTION_CONSTEXPR_X(Smoothstep)
+
+		//////////////////////////////////////////////////
+		//
+		//	NormalizeAngle
+		//
+		//////////////////////////////////////////////////
+
+		inline float NormalizeAngle(float radian, const float center) noexcept
+		{
+			radian = Math::Fmod(radian + (PiF - center), TwoPiF);
+
+			if (radian < 0.0f)
+			{
+				radian += TwoPiF;
+			}
+
+			return (radian - (PiF - center));
+		}
+
+		inline double NormalizeAngle(double radian, const double center) noexcept
+		{
+			radian = Math::Fmod(radian + (Pi - center), TwoPi);
+
+			if (radian < 0.0)
+			{
+				radian += TwoPi;
+			}
+
+			return (radian - (Pi - center));
+		}
+
+		SIV3D_CONCEPT_ARITHMETIC_
+		inline double NormalizeAngle(const Arithmetic radian_, const double center) noexcept
+		{
+			double radian = Math::Fmod(radian_ + (Pi - center), TwoPi);
+
+			if (radian < 0.0)
+			{
+				radian += TwoPi;
+			}
+
+			return (radian - (Pi - center));
+		}
 
 		//////////////////////////////////////////////////
 		//

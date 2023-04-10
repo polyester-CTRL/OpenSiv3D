@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -502,7 +502,7 @@ namespace s3d
 		{
 			if (not path)
 			{
-				return false;
+				return true;
 			}
 
 			if (IsResourcePath(path))
@@ -591,38 +591,5 @@ namespace s3d
 
 			return "";
 		}		
-	}
-
-	namespace Platform::Web
-	{
-		namespace detail
-		{
-			__attribute__((import_name("siv3dDownloadFile")))
-			void siv3dDownloadFile(const char* filePath, const char* fileName, const char* mimeType = nullptr);
-
-			__attribute__((import_name("siv3dLocateFile")))
-			char* siv3dLocateFile();
-		}
-
-		void DownloadFile(FilePathView filePath)
-		{
-			const auto fileName = s3d::FileSystem::FileName(filePath);
-			detail::siv3dDownloadFile(filePath.narrow().c_str(), fileName.narrow().c_str());
-		}
-
-		void FetchFile(FilePathView filePath)
-		{
-			if (not s3d::FileSystem::Exists(filePath))
-			{
-				String origin{U""};
-
-				if (auto originNamePtr = detail::siv3dLocateFile())
-				{
-					origin = Unicode::FromUTF8(originNamePtr);
-				}
-
-				s3d::SimpleHTTP::Save(origin + filePath, filePath);
-			}
-		}
 	}
 }

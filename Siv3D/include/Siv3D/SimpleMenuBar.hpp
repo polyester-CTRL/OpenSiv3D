@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2022 Ryo Suzuki
-//	Copyright (c) 2016-2022 OpenSiv3D Project
+//	Copyright (c) 2008-2023 Ryo Suzuki
+//	Copyright (c) 2016-2023 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -84,7 +84,7 @@ namespace s3d
 		explicit SimpleMenuBar(const Array<std::pair<String, Array<String>>>& menus);
 
 		/// @brief メニューバーを更新します。
-		/// @return メニューアイテムが選択され場合、そのアイテムのインデックス。それ以外の場合は none
+		/// @return メニューアイテムが選択された場合、そのアイテムのインデックス。それ以外の場合は none
 		Optional<MenuBarItemIndex> update();
 
 		/// @brief メニューバーを描画します。
@@ -110,9 +110,33 @@ namespace s3d
 		bool getItemEnabled(size_t menuIndex, size_t itemIndex) const;
 
 		/// @brief アイテムの有効無効を取得します。
-		/// @param itemIndex イテムのインデックス
+		/// @param itemIndex アイテムのインデックス
 		/// @return 有効である場合 true, 無効である場合 false
 		bool getItemEnabled(const MenuBarItemIndex& itemIndex) const;
+
+		/// @brief アイテムがチェックされているかを切り替えます。
+		/// @param menuIndex メニューインデックス
+		/// @param itemIndex アイテムインデックス
+		/// @param checked チェックされている状態にする場合 true, チェックされていない状態にする場合は false
+		/// @return *this
+		SimpleMenuBar& setItemChecked(size_t menuIndex, size_t itemIndex, bool checked);
+
+		/// @brief アイテムがチェックされているかを切り替えます。
+		/// @param itemIndex アイテムのインデックス
+		/// @param checked チェックされている状態にする場合 true, チェックされていない状態にする場合は false
+		/// @return *this
+		SimpleMenuBar& setItemChecked(const MenuBarItemIndex& itemIndex, bool checked);
+
+		/// @brief アイテムがチェックされているかを返します。
+		/// @param menuIndex メニューインデックス
+		/// @param itemIndex アイテムインデックス
+		/// @return チェックされている場合 true, それ以外の場合は false
+		bool getItemChecked(size_t menuIndex, size_t itemIndex) const;
+
+		/// @brief アイテムがチェックされているかを返します。
+		/// @param itemIndex アイテムのインデックス
+		/// @return チェックされている場合 true, それ以外の場合は false
+		bool getItemChecked(const MenuBarItemIndex& itemIndex) const;
 
 		/// @brief カラーパレットを変更します。
 		/// @param palette 新しいカラーパレット
@@ -125,9 +149,9 @@ namespace s3d
 
 		static constexpr int32 FontSize = 16;
 
-		static constexpr int32 ItemPaddingLeft = 24;
+		static constexpr int32 ItemPaddingLeft = 40;
 
-		static constexpr int32 ItemPaddingRight = (ItemPaddingLeft + 4);
+		static constexpr int32 ItemPaddingRight = 40;
 
 		static constexpr int32 ItemPaddingY = 5;
 
@@ -141,9 +165,18 @@ namespace s3d
 
 			Rect itemBoxRect;
 
-			Array<String> items;
+			struct Item
+			{
+				String label;
 
-			Array<bool> itemsEnabled;
+				char32 icon = 0;
+
+				bool checked = false;
+
+				bool enabled = true;
+			};
+
+			Array<Item> items;
 		};
 
 		Array<Menu> m_menus;

@@ -40,9 +40,9 @@ set(SIV3D_CXX_DEFINITION
 
 # Linker flags
 set(SIV3D_EXE_LINKER_FLAGS
-  --js-library=\${_IMPORT_PREFIX}/lib/Siv3D/Siv3D.js
-  --pre-js=\${_IMPORT_PREFIX}/lib/Siv3D/Siv3D.pre.js
-  --post-js=\${_IMPORT_PREFIX}/lib/Siv3D/Siv3D.post.js
+  --js-library=\${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/Siv3D.js
+  --pre-js=\${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/Siv3D.pre.js
+  --post-js=\${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/Siv3D.post.js
 )
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -157,6 +157,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/Date/SivDate_macOS_Linux.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/DateTime/SivDateTime_macOS_Linux.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/DLL/SivDLL.cpp
+  ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/DriveInfo/SivDriveInfo.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/EnvironmentVariable/SivEnvironmentVariable.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/Gamepad/CGamepad.cpp
   ../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/Keyboard/CKeyboard.cpp
@@ -241,6 +242,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/BinaryWriter/SivBinaryWriter.cpp
   ../Siv3D/src/Siv3D/Blob/SivBlob.cpp
   ../Siv3D/src/Siv3D/Box/SivBox.cpp
+  ../Siv3D/src/Siv3D/Browser/SivBrowser.cpp
   ../Siv3D/src/Siv3D/Buffer2D/SivBuffer2D.cpp
   ../Siv3D/src/Siv3D/Byte/SivByte.cpp
   ../Siv3D/src/Siv3D/CacheDirectory/CacheDirectory.cpp
@@ -807,7 +809,14 @@ set(SIV3D_THIRDPARTY_SOURCES
   ../Siv3D/src/ThirdParty/muparser/muParserError.cpp
   ../Siv3D/src/ThirdParty/muparser/muParserInt.cpp
   ../Siv3D/src/ThirdParty/muparser/muParserTokenReader.cpp
-  
+
+  ../Siv3D/src/ThirdParty/nlohmann/json-patch.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/json-schema-draft7.json.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/json-uri.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/json-validator.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/smtp-address-validator.cpp
+  ../Siv3D/src/ThirdParty/nlohmann/string-format-check.cpp
+
   ../Siv3D/src/ThirdParty/Oniguruma/ascii.c
   ../Siv3D/src/ThirdParty/Oniguruma/big5.c
   ../Siv3D/src/ThirdParty/Oniguruma/cp1251.c
@@ -1338,21 +1347,22 @@ else()
 endif()
 
 set(SIV3D_THIRD_PARTY_LIBRARIES
-    \${_IMPORT_PREFIX}/lib/Siv3D/opencv/libopencv_objdetect${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/opencv/libopencv_photo${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/opencv/libopencv_imgproc${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/opencv/libopencv_core${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/harfbuzz/libharfbuzz${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/freetype/libfreetype${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/turbojpeg/libturbojpeg${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/giflib/libgif${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/webp/libwebp${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/opus/libopusfile${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/opus/libopus${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/tiff/libtiff${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/png/libpng${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/zlib/libz${Siv3DLibraryPostfix}
-    \${_IMPORT_PREFIX}/lib/Siv3D/SDL2/libSDL2${Siv3DLibraryPostfix}
+  -Wl,--no-whole-archive
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/opencv/libopencv_objdetect${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/opencv/libopencv_photo${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/opencv/libopencv_imgproc${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/opencv/libopencv_core${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/harfbuzz/libharfbuzz${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/freetype/libfreetype${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/turbojpeg/libturbojpeg${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/giflib/libgif${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/webp/libwebp${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/opus/libopusfile${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/opus/libopus${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/tiff/libtiff${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/png/libpng${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/zlib/libz${Siv3DLibraryPostfix}
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D/SDL2/libSDL2${Siv3DLibraryPostfix}
 )
 
 target_link_libraries(Siv3D INTERFACE
@@ -1360,7 +1370,7 @@ target_link_libraries(Siv3D INTERFACE
 )
 
 # Siv3D install settings
-message(STATUS "[info] CMAKE_INSTALL_LIBDIR: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+message(STATUS "[info] CMAKE_INSTALL_LIBDIR: ${CMAKE_INSTALL_PREFIX}/\${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
 message(STATUS "[info] CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/Siv3D")
 install(
   TARGETS Siv3D Siv3DInterface Siv3DPrivateInterface Siv3DBrowserImageEncodeDecode Siv3DScript Siv3DWebGPU
@@ -1396,5 +1406,5 @@ install(
     ${PROJECT_SOURCE_DIR}/Siv3D.pre.js
     ${PROJECT_SOURCE_DIR}/Siv3D.sharedMain.pre.js
   DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/Siv3D
+    \${_IMPORT_PREFIX}/${CMAKE_INSTALL_LIBDIR}/Siv3D
 )
