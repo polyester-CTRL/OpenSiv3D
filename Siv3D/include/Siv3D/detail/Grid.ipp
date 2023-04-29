@@ -129,6 +129,8 @@ namespace s3d
 	inline void Grid<Type, Allocator>::assign(const size_type w, const size_type h, const value_type& value)
 	{
 		m_data.assign(w * h, value);
+		m_width = w;
+		m_height = h;
 	}
 
 	template <class Type, class Allocator>
@@ -136,7 +138,7 @@ namespace s3d
 	{
 		assert(0 <= size.x);
 		assert(0 <= size.y);
-		m_data.assign(size.x * size.y, value);
+		assign(size.x, size.y, value);
 	}
 
 	template <class Type, class Allocator>
@@ -144,7 +146,7 @@ namespace s3d
 	{
 		m_data.clear();
 
-		m_data.resize(std::max_element(set.begin(), set.end(),
+		resize(std::max_element(set.begin(), set.end(),
 			[](auto& lhs, auto& rhs) { return lhs.size() < rhs.size(); })->size(), set.size());
 
 		auto dst = begin();
@@ -609,18 +611,19 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline void Grid<Type, Allocator>::resize(const size_type w, const size_type h)
 	{
+		// 幅か高さが 0 なら空の二次元配列にする
+		if ((w == 0) || (h == 0))
+		{
+			m_data.clear();
+			m_width = w;
+			m_height = h;
+			return;
+		}
+
 		const size_t oldWidth = m_width;
 		const size_t newWidth = w;
 		const size_t oldHeight = m_height;
 		const size_t newHeight = h;
-
-		// 幅か高さが 0 なら空の二次元配列にする
-		if ((newWidth == 0) || (newHeight == 0))
-		{
-			m_data.clear();
-			m_width = m_height = 0;
-			return;
-		}
 
 		// 元のサイズが 0 なら
 		if (m_data.isEmpty())
@@ -687,18 +690,19 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline void Grid<Type, Allocator>::resize(const size_type w, const size_type h, const value_type& value)
 	{
+		// 幅か高さが 0 なら空の二次元配列にする
+		if ((w == 0) || (h == 0))
+		{
+			m_data.clear();
+			m_width = w;
+			m_height = h;
+			return;
+		}
+
 		const size_t oldWidth = m_width;
 		const size_t newWidth = w;
 		const size_t oldHeight = m_height;
 		const size_t newHeight = h;
-
-		// 幅か高さが 0 なら空の二次元配列にする
-		if ((newWidth == 0) || (newHeight == 0))
-		{
-			m_data.clear();
-			m_width = m_height = 0;
-			return;
-		}
 
 		// 元のサイズが 0 なら
 		if (m_data.isEmpty())
@@ -927,20 +931,22 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	inline const typename Grid<Type, Allocator>::value_type& Grid<Type, Allocator>::fetch(const size_type y, const size_type x, const value_type& defaultValue) const
+	template <class U>
+	inline typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const size_type y, const size_type x, U&& defaultValue) const
 	{
 		if (not inBounds(y, x))
 		{
-			return defaultValue;
+			return std::forward<U>(defaultValue);
 		}
 
 		return m_data[y * m_width + x];
 	}
 
 	template <class Type, class Allocator>
-	inline const typename Grid<Type, Allocator>::value_type& Grid<Type, Allocator>::fetch(const Point pos, const value_type& defaultValue) const
+	template <class U>
+	inline typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const Point pos, U&& defaultValue) const
 	{
-		return fetch(pos.y, pos.x, defaultValue);
+		return fetch(pos.y, pos.x, std::forward<U>(defaultValue));
 	}
 
 	template <class Type, class Allocator>

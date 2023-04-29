@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 project(OpenSiv3D_Linux
-    VERSION 0.6.8
+    VERSION 0.6.9
     LANGUAGES CXX C ASM
     HOMEPAGE_URL "https://github.com/Siv3D/OpenSiv3D"
     DESCRIPTION "A C++20 framework for creative coding (2D/3D games, media art, visualizers, and simulators)."
@@ -669,6 +669,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/SimpleGUI/SivSimpleGUI.cpp
   ../Siv3D/src/Siv3D/SimpleHTTP/SivSimpleHTTP.cpp
   ../Siv3D/src/Siv3D/SimpleMenuBar/SivSimpleMenuBar.cpp
+  ../Siv3D/src/Siv3D/SimpleTable/SivSimpleTable.cpp
   ../Siv3D/src/Siv3D/Sky/SivSky.cpp
   ../Siv3D/src/Siv3D/SoundFont/CSoundFont.cpp
   ../Siv3D/src/Siv3D/SoundFont/SivSoundFont.cpp
@@ -690,6 +691,7 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/TCPClient/TCPClientDetail.cpp
   ../Siv3D/src/Siv3D/TCPServer/SivTCPServer.cpp
   ../Siv3D/src/Siv3D/TCPServer/TCPServerDetail.cpp
+  ../Siv3D/src/Siv3D/TextAreaEditState/SivTextAreaEditState.cpp
   ../Siv3D/src/Siv3D/TextEncoding/SivTextEncoding.cpp
   ../Siv3D/src/Siv3D/TextInput/SivTextInput.cpp
   ../Siv3D/src/Siv3D/TextInput/TextInputFactory.cpp

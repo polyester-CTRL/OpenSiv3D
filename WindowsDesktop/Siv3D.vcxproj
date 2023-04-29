@@ -684,6 +684,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleGUI.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleHTTP.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SimpleMenuBar.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimpleTable.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Sky.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SFMT.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SoundFont.hpp" />
@@ -706,6 +707,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TCPClient.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TCPError.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TCPServer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextAreaEditState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEditState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextInput.hpp" />
@@ -2409,6 +2411,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleGUI.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleHTTP\SivSimpleHTTP.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleMenuBar\SivSimpleMenuBar.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimpleTable\SivSimpleTable.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Sky\SivSky.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SoundFont\CSoundFont.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SoundFont\SivSoundFont.cpp" />
@@ -2430,6 +2433,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TCPClient\TCPClientDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TCPServer\SivTCPServer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TCPServer\TCPServerDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextAreaEditState\SivTextAreaEditState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextEncoding\SivTextEncoding.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextInput\SivTextInput.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextInput\TextInputFactory.cpp" />
