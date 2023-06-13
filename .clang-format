@@ -1,19 +1,17 @@
 Language: Cpp
+BasedOnStyle: LLVM
 Standard: c++20
 UseTab: ForIndentation
-AllowShortBlocksOnASingleLine: Never
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLambdasOnASingleLine: None
-AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterReturnType: None
-AlwaysBreakBeforeMultilineStrings: false
 NamespaceIndentation: All
 TabWidth: 1
 IndentWidth: 1
-DerivePointerAlignment: true
-BreakBeforeBraces: Custom
+PointerAlignment: Left
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+ColumnLimit: 0
+AccessModifierOffset: -1
+FixNamespaceComments: false
 BraceWrapping:
   AfterFunction: true
   BeforeElse: true
