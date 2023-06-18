@@ -3,27 +3,27 @@
 //
 //	Example non-graphical program
 //
-# include <Siv3D.hpp> // OpenSiv3D v0.6.9
-SIV3D_SET(EngineOption::Renderer::Headless) // Force non-graphical mode
-void Main()
-{
-	Console << U"\n----------------";
-	Console << U"Hello, Siv3D!";
-	Console << U"You are running a non-graphical program.";
-	Console << U"You can code a graphical program in Linux/App/Main.cpp";
-	Console << U"----------------\n";
-}
+// # include <Siv3D.hpp> // OpenSiv3D v0.6.9
+// SIV3D_SET(EngineOption::Renderer::Headless) // Force non-graphical mode
+// void Main()
+// {
+// 	Console << U"\n----------------";
+// 	Console << U"Hello, Siv3D!";
+// 	Console << U"You are running a non-graphical program.";
+// 	Console << U"You can code a graphical program in Linux/App/Main.cpp";
+// 	Console << U"----------------\n";
+// }
 //
 /////////////////
 
 
-/*
+
 /////////////////
 //
 //	Example graphical program
 //
 # include <Siv3D.hpp> // OpenSiv3D v0.6.9
-
+SIV3D_SET(EngineOption::Renderer::OpenGLES)
 void Main()
 {
 	// 背景の色を設定する | Set the background color
@@ -119,4 +119,4 @@ void Main()
 }
 //
 /////////////////
-*/
+
