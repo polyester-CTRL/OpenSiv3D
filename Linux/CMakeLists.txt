@@ -22,11 +22,11 @@ find_package(GIF REQUIRED)
 include(GNUInstallDirs)
 
 # C flags
-set(SIV3D_C_FLAGS -Wall -Wextra -Wno-missing-field-initializers -fPIC -msse4.1)
+set(SIV3D_C_FLAGS -Wall -Wextra -Wno-missing-field-initializers -fPIC)
 set(SIV3D_C_FLAGS_DEBUG -g3 -O0 -pg -DDEBUG)
-set(SIV3D_C_FLAGS_RELEASE -O2 -DNDEBUG -march=x86-64 -mtune=generic)
+set(SIV3D_C_FLAGS_RELEASE -O2 -DNDEBUG -mtune=generic)
 set(SIV3D_C_FLAGS_RELWITHDEBINFO -g3 -Og -pg)
-set(SIV3D_C_FLAGS_MINSIZEREL -Os -DNDEBUG -march=x86-64 -mtune=generic)
+set(SIV3D_C_FLAGS_MINSIZEREL -Os -DNDEBUG -mtune=generic)
 set(SIV3D_C_DEFINITION
     _GLFW_X11
     WITH_ALSA
@@ -34,11 +34,11 @@ set(SIV3D_C_DEFINITION
 )
 
 # C++ flags
-set(SIV3D_CXX_FLAGS -Wall -Wextra -Wno-unknown-pragmas -fPIC -msse4.1)
+set(SIV3D_CXX_FLAGS -Wall -Wextra -Wno-unknown-pragmas -fPIC)
 set(SIV3D_CXX_FLAGS_DEBUG -g3 -O0 -pg -DDEBUG)
-set(SIV3D_CXX_FLAGS_RELEASE -O2 -DNDEBUG -march=x86-64 -mtune=generic)
+set(SIV3D_CXX_FLAGS_RELEASE -O2 -DNDEBUG -mtune=generic)
 set(SIV3D_CXX_FLAGS_RELWITHDEBINFO -g3 -Og -pg)
-set(SIV3D_CXX_FLAGS_MINSIZEREL -Os -DNDEBUG -march=x86-64 -mtune=generic)
+set(SIV3D_CXX_FLAGS_MINSIZEREL -Os -DNDEBUG -mtune=generic)
 set(SIV3D_CXX_DEFINITION
     __LINUX_ALSA__
     AS_USE_NAMESPACE
@@ -63,6 +63,23 @@ if (NOT CMAKE_CONFIGURATION_TYPES AND
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+# Architecture-specific compiler options
+# Architecture-specific compiler options
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=x86-64")
+  set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -march=x86-64")
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=x86-64")
+  set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -march=x86-64")
+elseif ((CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l") OR (CMAKE_SYSTEM_PROCESSOR STREQUAL "armv8l")) # 32-bit ARM
+  # Optimized for ARMv8-A (e.g. Raspberry Pi 3/4) even on 32-bit mode
+  # Reference: https://gist.github.com/fm4dd/c663217935dc17f0fc73c9c81b0aa845
+  # "-marm" is required for compiling assembly code in AngelScript library
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcpu=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8 -marm -mneon-for-64bits")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcpu=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8 -marm -mneon-for-64bits")
+endif()
 
 set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D-Platform/Linux/Siv3D/Siv3DMain.cpp
@@ -239,7 +256,6 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/Siv3D/Console/SivConsole.cpp
   ../Siv3D/src/Siv3D/ConstantBuffer/Null/ConstantBufferDetail_Null.cpp
   ../Siv3D/src/Siv3D/ConstantBuffer/SivConstantBuffer.cpp
-  ../Siv3D/src/Siv3D/CPUInfo/SivCPUInfo.cpp
   ../Siv3D/src/Siv3D/CSV/SivCSV.cpp
   ../Siv3D/src/Siv3D/Cursor/CCursor_Null.cpp
   ../Siv3D/src/Siv3D/Cursor/CursorFactory.cpp
@@ -844,7 +860,6 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/ThirdParty/box2d/dynamics/b2_world_callbacks.cpp
   ../Siv3D/src/ThirdParty/box2d/rope/b2_rope.cpp
 
-  ../Siv3D/src/ThirdParty/cpu_features/cpuinfo_x86.c
   ../Siv3D/src/ThirdParty/cpu_features/filesystem.c
   ../Siv3D/src/ThirdParty/cpu_features/stack_line_reader.c
   ../Siv3D/src/ThirdParty/cpu_features/string_view.c
@@ -899,8 +914,6 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/ThirdParty/infoware/src/cpu/vendor_model_name/vendor_model_name_darwin.cpp
   ../Siv3D/src/ThirdParty/infoware/src/cpu/vendor_model_name/vendor_model_name_non_windows_non_darwin.cpp
   ../Siv3D/src/ThirdParty/infoware/src/cpu/vendor_model_name/vendor_model_name_windows.cpp
-  ../Siv3D/src/ThirdParty/infoware/src/detail/cpuid_non_windows.cpp
-  ../Siv3D/src/ThirdParty/infoware/src/detail/cpuid_windows.cpp
   ../Siv3D/src/ThirdParty/infoware/src/detail/scope.cpp
   ../Siv3D/src/ThirdParty/infoware/src/detail/sysctl_darwin.cpp
   ../Siv3D/src/ThirdParty/infoware/src/detail/sysctl_non_darwin.cpp
@@ -1206,7 +1219,6 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/ThirdParty/zstd/compress/zstd_ldm.c
   ../Siv3D/src/ThirdParty/zstd/compress/zstd_opt.c
   ../Siv3D/src/ThirdParty/zstd/decompress/huf_decompress.c
-  ../Siv3D/src/ThirdParty/zstd/decompress/huf_decompress_amd64.S
   ../Siv3D/src/ThirdParty/zstd/decompress/zstd_ddict.c
   ../Siv3D/src/ThirdParty/zstd/decompress/zstd_decompress.c
   ../Siv3D/src/ThirdParty/zstd/decompress/zstd_decompress_block.c
@@ -1214,8 +1226,35 @@ set(SIV3D_INTERNAL_SOURCES
   ../Siv3D/src/ThirdParty/zstd/dictBuilder/divsufsort.c
   ../Siv3D/src/ThirdParty/zstd/dictBuilder/fastcover.c
   ../Siv3D/src/ThirdParty/zstd/dictBuilder/zdict.c
-  ../Siv3D/src/ThirdParty/zstd/decompress/huf_decompress_amd64.S
 )
+
+# Architecture-specific source files
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  list(APPEND SIV3D_INTERNAL_SOURCES
+    ../Siv3D/src/Siv3D/CPUInfo/SivCPUInfo.cpp
+
+    ../Siv3D/src/ThirdParty/cpu_features/cpuinfo_x86.c
+
+    ../Siv3D/src/ThirdParty/infoware/src/detail/cpuid_non_windows.cpp
+    ../Siv3D/src/ThirdParty/infoware/src/detail/cpuid_windows.cpp
+
+    ../Siv3D/src/ThirdParty/zstd/decompress/huf_decompress_amd64.S
+    )
+elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")  # 64-bit ARM
+  list(APPEND SIV3D_INTERNAL_SOURCES
+    ../Siv3D/src/Siv3D-Platform/Web/Siv3D/CPUInfo/SivCPUInfo.cpp
+
+    ../Siv3D/src/ThirdParty/angelscript/as_callfunc_arm64.cpp
+    ../Siv3D/src/ThirdParty/angelscript/as_callfunc_arm64_gcc.S
+    )
+elseif ((CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l") OR (CMAKE_SYSTEM_PROCESSOR STREQUAL "armv8l")) # 32-bit ARM
+  list(APPEND SIV3D_INTERNAL_SOURCES
+    ../Siv3D/src/Siv3D-Platform/Web/Siv3D/CPUInfo/SivCPUInfo.cpp
+
+    ../Siv3D/src/ThirdParty/angelscript/as_callfunc_arm.cpp
+    ../Siv3D/src/ThirdParty/angelscript/as_callfunc_arm_gcc.S
+    )
+endif()
 
 set(SIV3D_INTERNAL_INCLUDE_DIRS
   ../Siv3D/include
