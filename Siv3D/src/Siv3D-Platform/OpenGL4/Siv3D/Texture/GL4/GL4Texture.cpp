@@ -11,6 +11,7 @@
 
 # include "GL4Texture.hpp"
 # include <Siv3D/EngineLog.hpp>
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Texture/TextureCommon.hpp>
 # include <Siv3D/Renderer/GL4/CRenderer_GL4.hpp>
@@ -18,6 +19,7 @@
 namespace s3d
 {
 	GL4Texture::GL4Texture(const Image& image, const TextureDesc desc)
+		: m_hasMipMap{ detail::HasMipMap(desc) }
 	{
 		const TextureFormat format = 
 			detail::IsSRGB(desc) ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm;
@@ -28,7 +30,17 @@ namespace s3d
 			::glBindTexture(GL_TEXTURE_2D, m_texture);
 			::glTexImage2D(GL_TEXTURE_2D, 0, format.GLInternalFormat(), image.width(), image.height(), 0,
 						   format.GLFormat(), format.GLType(), image.data());
-			::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			if (m_hasMipMap)
+			{
+				const size_t mipmapCount = ImageProcessing::CalculateMipCount(image.width(), image.height());
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(mipmapCount - 1));
+				::glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+			{
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			}
 		}
 		
 		m_size			= image.size();
@@ -39,6 +51,7 @@ namespace s3d
 	}
 	
 	GL4Texture::GL4Texture(const Image& image, const Array<Image>& mipmaps, const TextureDesc desc)
+		: m_hasMipMap{ true }
 	{
 		const TextureFormat format =
 			detail::IsSRGB(desc) ? TextureFormat::R8G8B8A8_Unorm_SRGB : TextureFormat::R8G8B8A8_Unorm;
@@ -72,6 +85,7 @@ namespace s3d
 		, m_format{ format }
 		, m_textureDesc{ desc }
 		, m_type{ TextureType::Dynamic }
+		, m_hasMipMap{ detail::HasMipMap(desc) }
 	{
 		// [メインテクスチャ] を作成
 		{
@@ -79,7 +93,17 @@ namespace s3d
 			::glBindTexture(GL_TEXTURE_2D, m_texture);
 			::glTexImage2D(GL_TEXTURE_2D, 0, format.GLInternalFormat(), size.x, size.y, 0,
 				format.GLFormat(), format.GLType(), pData);
-			::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			if (m_hasMipMap)
+			{
+				const size_t mipmapCount = ImageProcessing::CalculateMipCount(size.x, size.y);
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(mipmapCount - 1));
+				::glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+			{
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			}
 		}
 
 		m_initialized = true;
@@ -90,6 +114,7 @@ namespace s3d
 		, m_format{ format }
 		, m_textureDesc{ desc }
 		, m_type{ TextureType::Render }
+		, m_hasMipMap{ detail::HasMipMap(desc) }
 	{
 		if (format == TextureFormat::Unknown)
 		{
@@ -103,7 +128,17 @@ namespace s3d
 			::glBindTexture(GL_TEXTURE_2D, m_texture);
 			::glTexImage2D(GL_TEXTURE_2D, 0, format.GLInternalFormat(), size.x, size.y, 0,
 				format.GLFormat(), format.GLType(), nullptr);
-			::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			if (m_hasMipMap)
+			{
+				const size_t mipmapCount = ImageProcessing::CalculateMipCount(size.x, size.y);
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(mipmapCount - 1));
+				::glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+			{
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			}
 		}
 
 		// [メインテクスチャ・フレームバッファ] を作成
@@ -134,6 +169,7 @@ namespace s3d
 		, m_format{ format }
 		, m_textureDesc{ desc }
 		, m_type{ TextureType::Render }
+		, m_hasMipMap{ detail::HasMipMap(desc) }
 	{
 		if ((format != TextureFormat::R8G8B8A8_Unorm)
 			&& (format != TextureFormat::R8G8B8A8_Unorm_SRGB))
@@ -148,7 +184,17 @@ namespace s3d
 			::glBindTexture(GL_TEXTURE_2D, m_texture);
 			::glTexImage2D(GL_TEXTURE_2D, 0, format.GLInternalFormat(), image.width(), image.height(), 0,
 				format.GLFormat(), format.GLType(), image.data());
-			::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			if (m_hasMipMap)
+			{
+				const size_t mipmapCount = ImageProcessing::CalculateMipCount(image.width(), image.height());
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(mipmapCount - 1));
+				::glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+			{
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			}
 		}
 
 		// [メインテクスチャ・フレームバッファ] を作成
@@ -179,6 +225,7 @@ namespace s3d
 		, m_format{ format }
 		, m_textureDesc{ desc }
 		, m_type{ TextureType::Render }
+		, m_hasMipMap{ detail::HasMipMap(desc) }
 	{
 		if (format != TextureFormat::R32_Float)
 		{
@@ -193,7 +240,17 @@ namespace s3d
 			::glTexImage2D(GL_TEXTURE_2D, 0, format.GLInternalFormat(),
 				static_cast<GLint>(image.width()), static_cast<GLint>(image.height()), 0,
 				format.GLFormat(), format.GLType(), image.data());
-			::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			if (m_hasMipMap)
+			{
+				const size_t mipmapCount = ImageProcessing::CalculateMipCount(image.width(), image.height());
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(mipmapCount - 1));
+				::glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+			{
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			}
 		}
 
 		// [メインテクスチャ・フレームバッファ] を作成
@@ -224,6 +281,7 @@ namespace s3d
 		, m_format{ format }
 		, m_textureDesc{ desc }
 		, m_type{ TextureType::Render }
+		, m_hasMipMap{ detail::HasMipMap(desc) }
 	{
 		if (format != TextureFormat::R32G32_Float)
 		{
@@ -238,7 +296,17 @@ namespace s3d
 			::glTexImage2D(GL_TEXTURE_2D, 0, format.GLInternalFormat(),
 				static_cast<GLint>(image.width()), static_cast<GLint>(image.height()), 0,
 				format.GLFormat(), format.GLType(), image.data());
-			::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			if (m_hasMipMap)
+			{
+				const size_t mipmapCount = ImageProcessing::CalculateMipCount(image.width(), image.height());
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(mipmapCount - 1));
+				::glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+			{
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			}
 		}
 
 		// [メインテクスチャ・フレームバッファ] を作成
@@ -269,6 +337,7 @@ namespace s3d
 		, m_format{ format }
 		, m_textureDesc{ desc }
 		, m_type{ TextureType::Render }
+		, m_hasMipMap{ detail::HasMipMap(desc) }
 	{
 		if (format != TextureFormat::R32G32B32A32_Float)
 		{
@@ -283,7 +352,17 @@ namespace s3d
 			::glTexImage2D(GL_TEXTURE_2D, 0, format.GLInternalFormat(),
 				static_cast<GLint>(image.width()), static_cast<GLint>(image.height()), 0,
 				format.GLFormat(), format.GLType(), image.data());
-			::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			if (m_hasMipMap)
+			{
+				const size_t mipmapCount = ImageProcessing::CalculateMipCount(image.width(), image.height());
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(mipmapCount - 1));
+				::glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+			{
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			}
 		}
 
 		// [メインテクスチャ・フレームバッファ] を作成
@@ -314,6 +393,7 @@ namespace s3d
 		, m_format{ format }
 		, m_textureDesc{ desc }
 		, m_type{ TextureType::MSRender }
+		, m_hasMipMap{ detail::HasMipMap(desc) }
 	{
 		if (format == TextureFormat::Unknown)
 		{
@@ -348,7 +428,17 @@ namespace s3d
 			::glBindTexture(GL_TEXTURE_2D, m_texture);
 			::glTexImage2D(GL_TEXTURE_2D, 0, format.GLInternalFormat(), size.x, size.y, 0,
 				format.GLFormat(), format.GLType(), nullptr);
-			::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			if (m_hasMipMap)
+			{
+				const size_t mipmapCount = ImageProcessing::CalculateMipCount(size.x, size.y);
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, static_cast<GLint>(mipmapCount - 1));
+				::glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else
+			{
+				::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+			}
 		}
 
 		// [resolved フレームバッファ] を作成
@@ -596,6 +686,24 @@ namespace s3d
 		}
 
 		//::glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void GL4Texture::generateMips()
+	{
+		if ((m_type != TextureType::Render)
+			&& (m_type != TextureType::MSRender)
+			&& (m_type != TextureType::Dynamic))
+		{
+			return;
+		}
+
+		if (not m_hasMipMap)
+		{
+			return;
+		}
+
+		::glBindTexture(GL_TEXTURE_2D, m_texture);
+		::glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
 	void GL4Texture::readRT(Image& image)

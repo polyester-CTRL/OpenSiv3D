@@ -496,15 +496,31 @@ namespace s3d
 		/// @return *this
 		constexpr Rect& moveBy(size_type v) noexcept;
 
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param xy 左方向・右方向・上方向・下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr Rect stretched(value_type xy) const noexcept;
 
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param _x 左方向と右方向のそれぞれの拡大縮小量
+		/// @param _y 上方向と下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr Rect stretched(value_type _x, value_type _y) const noexcept;
 
+		/// @brief 左右・上下方向に拡大縮小した長方形を返します。
+		/// @param xy 左方向と右方向・上方向と下方向のそれぞれの拡大縮小量
+		/// @return 左右・上下方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr Rect stretched(size_type xy) const noexcept;
 
+		/// @brief 上下左右方向に拡大縮小した長方形を返します。
+		/// @param top 上方向の拡大縮小量
+		/// @param right 右方向の拡大縮小量
+		/// @param bottom 下方向の拡大縮小量
+		/// @param left 左方向の拡大縮小量
+		/// @return 上下左右方向に拡大縮小した長方形
 		[[nodiscard]]
 		constexpr Rect stretched(value_type top, value_type right, value_type bottom, value_type left) const noexcept;
 
@@ -681,6 +697,12 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr Quad shearedY(double vy) const noexcept;
+
+		[[nodiscard]]
+		Quad skewedX(double angle) const noexcept;
+
+		[[nodiscard]]
+		Quad skewedY(double angle) const noexcept;
 
 		/// @brief 角を丸めた RoundRect を作成して返します。
 		/// @param r 角の半径
@@ -874,11 +896,12 @@ namespace s3d
 
 		/// @brief 長方形の影を描画します。
 		/// @param offset 影の位置のオフセット（ピクセル）
-		/// @param blurRadius 影のぼかし半径（ピクセル）
+		/// @param blur ぼかしの大きさ（ピクセル）
 		/// @param spread 影の膨張（ピクセル）
 		/// @param color 影の色
+		/// @param fill 影の内部を塗りつぶすか
 		/// @return *this
-		const Rect& drawShadow(const Vec2& offset, double blurRadius, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }) const;
+		const Rect& drawShadow(const Vec2& offset, double blur, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }, bool fill = true) const;
 
 		[[nodiscard]]
 		TexturedQuad operator ()(const Texture& texture) const;

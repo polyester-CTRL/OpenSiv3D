@@ -69,9 +69,14 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Image(Image&& image) noexcept;
 
+		/// @brief 画像データを作成します。
+		/// @param size 画像の幅と高さ（ピクセル）
 		SIV3D_NODISCARD_CXX20
 		explicit Image(size_t size);
 
+		/// @brief 画像データを作成します。
+		/// @param size 画像の幅と高さ（ピクセル）
+		/// @param color 塗りつぶしの色
 		SIV3D_NODISCARD_CXX20
 		explicit Image(size_t size, Color color);
 
@@ -104,9 +109,14 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Image(size_t width, size_t height, Arg::generator0_1_<Fty> generator);
 
+		/// @brief 画像データを作成します。
+		/// @param size 画像の幅と高さ（ピクセル）
 		SIV3D_NODISCARD_CXX20
 		explicit Image(Size size);
 
+		/// @brief 画像データを作成します。
+		/// @param size 画像の幅と高さ（ピクセル）
+		/// @param color 塗りつぶしの色
 		SIV3D_NODISCARD_CXX20
 		Image(Size size, Color color);
 
@@ -118,9 +128,15 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		Image(Size size, Arg::generator0_1_<Fty> generator);
 
+		/// @brief 画像ファイルの内容から画像データを作成します。
+		/// @param path 画像ファイルのパス
+		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
 		SIV3D_NODISCARD_CXX20
 		explicit Image(FilePathView path, ImageFormat format = ImageFormat::Unspecified);
 
+		/// @brief IReader から画像データを作成します。
+		/// @param reader IReader オブジェクト
+		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
 		SIV3D_NODISCARD_CXX20
 		explicit Image(IReader&& reader, ImageFormat format = ImageFormat::Unspecified);
 
@@ -136,9 +152,13 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		explicit Image(const Icon& icon, int32 size);
 
+		/// @brief 二次元配列から画像データを作成します。
+		/// @param grid 二次元配列
 		SIV3D_NODISCARD_CXX20
 		explicit Image(const Grid<Color>& grid);
 
+		/// @brief 二次元配列から画像データを作成します。
+		/// @param grid 二次元配列
 		SIV3D_NODISCARD_CXX20
 		explicit Image(const Grid<ColorF>& grid);
 
@@ -148,7 +168,19 @@ namespace s3d
 
 		Image& operator =(const Image&) = default;
 
-		Image& operator =(Image && image) noexcept;
+		Image& operator =(Image&& image) noexcept;
+
+		/// @brief 2 つの画像データが等しいかを返します。
+		/// @param lhs 一方の画像データ
+		/// @param rhs もう一方の画像データ
+		/// @return 2 つの画像データが等しい場合 true, それ以外の場合は false
+		friend bool operator ==(const Image& lhs, const Image& rhs) noexcept;
+
+		/// @brief 2 つの画像データが異なるかを返します。
+		/// @param lhs 一方の画像データ
+		/// @param rhs もう一方の画像データ
+		/// @return 2 つの画像データが異なる場合 true, それ以外の場合は false
+		friend bool operator !=(const Image& lhs, const Image& rhs) noexcept;
 
 		/// @brief 画像の幅（ピクセル）を返します。
 		/// @return 画像の幅（ピクセル）
@@ -342,22 +374,43 @@ namespace s3d
 		/// @param rect 領域
 		/// @return 新しい画像データ
 		[[nodiscard]]
-		Image clipped(const Rect& rect) const;
+		Image clipped(const Rect& rect) const&;
+
+		/// @brief 画像の一部領域をコピーした新しい画像データを返します。
+		/// @param rect 領域
+		/// @return 新しい画像データ
+		[[nodiscard]]
+		Image clipped(const Rect& rect) &&;
 
 		[[nodiscard]]
-		Image clipped(int32 x, int32 y, int32 w, int32 h) const;
+		Image clipped(int32 x, int32 y, int32 w, int32 h) const&;
 
 		[[nodiscard]]
-		Image clipped(const Point& pos, int32 w, int32 h) const;
+		Image clipped(int32 x, int32 y, int32 w, int32 h) &&;
 
 		[[nodiscard]]
-		Image clipped(int32 x, int32 y, const Size& size) const;
+		Image clipped(const Point& pos, int32 w, int32 h) const&;
 
 		[[nodiscard]]
-		Image clipped(const Point& pos, const Size& size) const;
+		Image clipped(const Point& pos, int32 w, int32 h) &&;
 
 		[[nodiscard]]
-		Image squareClipped() const;
+		Image clipped(int32 x, int32 y, const Size& size) const&;
+
+		[[nodiscard]]
+		Image clipped(int32 x, int32 y, const Size& size) &&;
+
+		[[nodiscard]]
+		Image clipped(const Point& pos, const Size& size) const&;
+
+		[[nodiscard]]
+		Image clipped(const Point& pos, const Size& size) &&;
+
+		[[nodiscard]]
+		Image squareClipped() const&;
+
+		[[nodiscard]]
+		Image squareClipped() &&;
 
 		template <class Fty>
 		Image& forEach(Fty f);
@@ -382,11 +435,19 @@ namespace s3d
 
 		bool saveWithDialog() const;
 
+		/// @brief 画像を PNG ファイルとして保存します。
+		/// @param path 保存するファイルパス
+		/// @param filter PNG のフィルタ
+		/// @return 保存に成功した場合 true, それ以外の場合は false
 		bool savePNG(FilePathView path, PNGFilter filter = PNGEncoder::DefaultFilter) const;
 
 		[[nodiscard]]
 		Blob encodePNG(PNGFilter filter = PNGEncoder::DefaultFilter) const;
 
+		/// @brief 画像を JPEG ファイルとして保存します。
+		/// @param path 保存するファイルパス
+		/// @param quality JPEG の品質 [0, 100]
+		/// @return 保存に成功した場合 true, それ以外の場合は false
 		bool saveJPEG(FilePathView path, int32 quality = JPEGEncoder::DefaultQuality) const;
 
 		[[nodiscard]]
@@ -407,96 +468,155 @@ namespace s3d
 		Image& negate();
 
 		[[nodiscard]]
-		Image negated() const;
+		Image negated() const&;
+
+		[[nodiscard]]
+		Image negated() &&;
 
 		/// @brief 画像をグレイスケール画像に変換します。
 		/// @return *this
 		Image& grayscale();
 
 		[[nodiscard]]
-		Image grayscaled() const;
+		Image grayscaled() const&;
+
+		[[nodiscard]]
+		Image grayscaled() &&;
 
 		/// @brief 画像をセピア画像に変換します。
 		/// @return *this
 		Image& sepia();
 
 		[[nodiscard]]
-		Image sepiaed() const;
+		Image sepiaed() const&;
+
+		[[nodiscard]]
+		Image sepiaed() &&;
 
 		Image& posterize(int32 level);
 
 		[[nodiscard]]
-		Image posterized(int32 level) const;
+		Image posterized(int32 level) const&;
+
+		[[nodiscard]]
+		Image posterized(int32 level) &&;
 
 		Image& brighten(int32 level);
 
 		[[nodiscard]]
-		Image brightened(int32 level) const;
+		Image brightened(int32 level) const&;
+
+		[[nodiscard]]
+		Image brightened(int32 level) &&;
 
 		/// @brief 画像を左右反転します。
 		/// @return *this
 		Image& mirror();
 
 		[[nodiscard]]
-		Image mirrored() const;
+		Image mirrored() const&;
+
+		[[nodiscard]]
+		Image mirrored() &&;
 
 		/// @brief 画像を上下反転します。
 		/// @return *this
 		Image& flip();
 
 		[[nodiscard]]
-		Image flipped() const;
+		Image flipped() const&;
+
+		[[nodiscard]]
+		Image flipped() &&;
 
 		/// @brief 画像を時計回りに 90° 回転します。
 		/// @return *this
 		Image& rotate90();
 
+		/// @brief 画像を時計回りに 90°* n 回転します。
+		/// @param n 時計回りに 90° 回転させる回数（負の場合は反時計回り）
+		/// @return *this
+		Image& rotate90(int32 n);
+
 		[[nodiscard]]
-		Image rotated90() const;
+		Image rotated90() const&;
+
+		[[nodiscard]]
+		Image rotated90() &&;
+
+		[[nodiscard]]
+		Image rotated90(int32 n) const&;
+
+		[[nodiscard]]
+		Image rotated90(int32 n) &&;
 
 		/// @brief 画像を時計回りに 180° 回転します。
 		/// @return *this
 		Image& rotate180();
 
 		[[nodiscard]]
-		Image rotated180() const;
+		Image rotated180() const&;
+
+		[[nodiscard]]
+		Image rotated180() &&;
 
 		/// @brief 画像を時計回りに 270° 回転します。
 		/// @return *this
 		Image& rotate270();
 
 		[[nodiscard]]
-		Image rotated270() const;
+		Image rotated270() const&;
+
+		[[nodiscard]]
+		Image rotated270() &&;
 
 		Image& gammaCorrect(double gamma);
 
 		[[nodiscard]]
-		Image gammaCorrected(double gamma) const;
+		Image gammaCorrected(double gamma) const&;
+
+		[[nodiscard]]
+		Image gammaCorrected(double gamma) &&;
 
 		Image& threshold(uint8 threshold, InvertColor invertColor = InvertColor::No);
 
 		[[nodiscard]]
-		Image thresholded(uint8 threshold, InvertColor invertColor = InvertColor::No) const;
+		Image thresholded(uint8 threshold, InvertColor invertColor = InvertColor::No) const&;
+
+		[[nodiscard]]
+		Image thresholded(uint8 threshold, InvertColor invertColor = InvertColor::No) &&;
 
 		Image& threshold_Otsu(InvertColor invertColor = InvertColor::No);
 
 		[[nodiscard]]
-		Image thresholded_Otsu(InvertColor invertColor = InvertColor::No) const;
+		Image thresholded_Otsu(InvertColor invertColor = InvertColor::No) const&;
+
+		[[nodiscard]]
+		Image thresholded_Otsu(InvertColor invertColor = InvertColor::No) &&;
 
 		Image& adaptiveThreshold(AdaptiveThresholdMethod method, int32 blockSize, double c, InvertColor invertColor = InvertColor::No);
 
 		[[nodiscard]]
-		Image adaptiveThresholded(AdaptiveThresholdMethod method, int32 blockSize, double c, InvertColor invertColor = InvertColor::No) const;
+		Image adaptiveThresholded(AdaptiveThresholdMethod method, int32 blockSize, double c, InvertColor invertColor = InvertColor::No) const&;
+
+		[[nodiscard]]
+		Image adaptiveThresholded(AdaptiveThresholdMethod method, int32 blockSize, double c, InvertColor invertColor = InvertColor::No) &&;
 
 		Image& mosaic(int32 size);
 
 		Image& mosaic(int32 horizontal, int32 vertical);
 
 		[[nodiscard]]
-		Image mosaiced(int32 size) const;
+		Image mosaiced(int32 size) const&;
 
 		[[nodiscard]]
-		Image mosaiced(int32 horizontal, int32 vertical) const;
+		Image mosaiced(int32 size) &&;
+
+		[[nodiscard]]
+		Image mosaiced(int32 horizontal, int32 vertical) const&;
+
+		[[nodiscard]]
+		Image mosaiced(int32 horizontal, int32 vertical) &&;
 
 		Image& spread(int32 size);
 
@@ -513,45 +633,72 @@ namespace s3d
 		Image& blur(int32 horizontal, int32 vertical, BorderType borderType = BorderType::Reflect_101);
 
 		[[nodiscard]]
-		Image blurred(int32 size, BorderType borderType = BorderType::Reflect_101) const;
+		Image blurred(int32 size, BorderType borderType = BorderType::Reflect_101) const&;
 
 		[[nodiscard]]
-		Image blurred(int32 horizontal, int32 vertical, BorderType borderType = BorderType::Reflect_101) const;
+		Image blurred(int32 size, BorderType borderType = BorderType::Reflect_101) &&;
+
+		[[nodiscard]]
+		Image blurred(int32 horizontal, int32 vertical, BorderType borderType = BorderType::Reflect_101) const&;
+
+		[[nodiscard]]
+		Image blurred(int32 horizontal, int32 vertical, BorderType borderType = BorderType::Reflect_101) &&;
 
 		Image& medianBlur(int32 apertureSize);
 
 		[[nodiscard]]
-		Image medianBlurred(int32 apertureSize) const;
+		Image medianBlurred(int32 apertureSize) const&;
+
+		[[nodiscard]]
+		Image medianBlurred(int32 apertureSize) &&;
 
 		Image& gaussianBlur(int32 size, BorderType borderType = BorderType::Reflect_101);
 
 		Image& gaussianBlur(int32 horizontal, int32 vertical, BorderType borderType = BorderType::Reflect_101);
 
 		[[nodiscard]]
-		Image gaussianBlurred(int32 size, BorderType borderType = BorderType::Reflect_101) const;
+		Image gaussianBlurred(int32 size, BorderType borderType = BorderType::Reflect_101) const&;
 
 		[[nodiscard]]
-		Image gaussianBlurred(int32 horizontal, int32 vertical, BorderType borderType = BorderType::Reflect_101) const;
+		Image gaussianBlurred(int32 size, BorderType borderType = BorderType::Reflect_101) &&;
+
+		[[nodiscard]]
+		Image gaussianBlurred(int32 horizontal, int32 vertical, BorderType borderType = BorderType::Reflect_101) const&;
+
+		[[nodiscard]]
+		Image gaussianBlurred(int32 horizontal, int32 vertical, BorderType borderType = BorderType::Reflect_101) &&;
 
 		Image& bilateralFilter(int32 d, double sigmaColor, double sigmaSpace, BorderType borderType = BorderType::Reflect_101);
 
 		[[nodiscard]]
-		Image bilateralFiltered(int32 d, double sigmaColor, double sigmaSpace, BorderType borderType = BorderType::Reflect_101) const;
+		Image bilateralFiltered(int32 d, double sigmaColor, double sigmaSpace, BorderType borderType = BorderType::Reflect_101) const&;
+
+		[[nodiscard]]
+		Image bilateralFiltered(int32 d, double sigmaColor, double sigmaSpace, BorderType borderType = BorderType::Reflect_101) &&;
 
 		Image& dilate(int32 iterations = 1);
 
 		[[nodiscard]]
-		Image dilated(int32 iterations = 1) const;
+		Image dilated(int32 iterations = 1) const&;
+
+		[[nodiscard]]
+		Image dilated(int32 iterations = 1) &&;
 
 		Image& erode(int32 iterations = 1);
 
 		[[nodiscard]]
-		Image eroded(int32 iterations = 1) const;
+		Image eroded(int32 iterations = 1) const&;
+
+		[[nodiscard]]
+		Image eroded(int32 iterations = 1) &&;
 
 		Image& floodFill(const Point& pos, const Color& color, FloodFillConnectivity connectivity = FloodFillConnectivity::Value4, int32 lowerDifference = 0, int32 upperDifference = 0);
 
 		[[nodiscard]]
-		Image floodFilled(const Point& pos, const Color& color, FloodFillConnectivity connectivity = FloodFillConnectivity::Value4, int32 lowerDifference = 0, int32 upperDifference = 0) const;
+		Image floodFilled(const Point& pos, const Color& color, FloodFillConnectivity connectivity = FloodFillConnectivity::Value4, int32 lowerDifference = 0, int32 upperDifference = 0) const&;
+
+		[[nodiscard]]
+		Image floodFilled(const Point& pos, const Color& color, FloodFillConnectivity connectivity = FloodFillConnectivity::Value4, int32 lowerDifference = 0, int32 upperDifference = 0) &&;
 
 		Image& scale(int32 width, int32 height, InterpolationAlgorithm interpolation = InterpolationAlgorithm::Auto);
 

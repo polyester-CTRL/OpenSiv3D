@@ -16,18 +16,26 @@
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Renderer3D/IRenderer3D.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
-# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
+# include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 
 namespace s3d
 {
+	namespace detail
+	{
+		static void CheckEngine()
+		{
+			if (not Siv3DEngine::isActive())
+			{
+				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, U"Model");
+				std::exit(EXIT_FAILURE);
+			}
+		}
+	}
+
 	template <>
 	AssetIDWrapper<AssetHandle<Model>>::AssetIDWrapper()
 	{
-		if (not Siv3DEngine::isActive())
-		{
-			FreestandingMessageBox::ShowError(U"`Model` must be initialized after engine-setup. Please fix the C++ code.");
-			std::abort();
-		}
+		detail::CheckEngine();
 	}
 
 	template <>
@@ -47,7 +55,7 @@ namespace s3d
 	Model::Model() {}
 
 	Model::Model(const FilePathView path, const ColorOption colorOption)
-		: AssetHandle{ std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Model)->create(path, colorOption)) }
+		: AssetHandle{ (detail::CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Model)->create(path, colorOption))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->created();
 	}

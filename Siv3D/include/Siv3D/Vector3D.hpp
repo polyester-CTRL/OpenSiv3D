@@ -51,6 +51,9 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		constexpr Vector3D(X _x, Y _y, Z _z) noexcept;
 
+		SIV3D_NODISCARD_CXX20
+		constexpr Vector3D(Point3D p) noexcept;
+
 		template <class U>
 		SIV3D_NODISCARD_CXX20
 		constexpr Vector3D(const Vector3D<U>& v) noexcept;
@@ -164,6 +167,24 @@ namespace s3d
 
 		/// @brief 各成分を 0 にセットします。
 		constexpr void clear() noexcept;
+
+		/// @brief x 成分のみを変更した自身のコピーを返します。
+		/// @param _x x 成分
+		/// @return x 成分を変更したコピー
+		[[nodiscard]]
+		constexpr Vector3D withX(value_type _x) const noexcept;
+
+		/// @brief y 成分のみを変更した自身のコピーを返します。
+		/// @param _y y 成分
+		/// @return y 成分を変更したコピー
+		[[nodiscard]]
+		constexpr Vector3D withY(value_type _y) const noexcept;
+
+		/// @brief z 成分のみを変更した自身のコピーを返します。
+		/// @param _z z 成分
+		/// @return z 成分を変更したコピー
+		[[nodiscard]]
+		constexpr Vector3D withZ(value_type _z) const noexcept;
 
 		/// @brief 各成分を変更します。
 		/// @param _x 新しい X 成分
@@ -309,6 +330,11 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr Vector3D lerp(Vector3D other, value_type f) const noexcept;
+
+		/// @brief Vec3 を Point3D 型に変換します。小数点数以下は切り捨てられます。
+		/// @return Point3D
+		[[nodiscard]]
+		constexpr Point3D asPoint3D() const noexcept;
 
 		[[nodiscard]]
 		size_t hash() const noexcept;

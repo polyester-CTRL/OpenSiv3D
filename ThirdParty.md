@@ -5,7 +5,7 @@ The license information will be shown by pressing F1 key while running Siv3D app
 
 Name | Version
 --- | ---
-[Abseil](https://github.com/abseil/abseil-cpp) | 20200923.2
+[Abseil](https://github.com/abseil/abseil-cpp) | 20230802.1
 [AngelCode Scripting Library](https://www.angelcode.com/angelscript/) | 2.35.1
 [asio](https://think-async.com/Asio/) | 1.22.1
 [Anti-Grain Geometry](http://agg.sourceforge.net/antigrain.com/index.html) | 2.4
@@ -40,6 +40,7 @@ Name | Version
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [libcurl](https://github.com/curl/curl) | 7.77.0
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 2.1.0
+[libmorton](https://github.com/Forceflow/libmorton) | v0.2.12
 [libogg](https://xiph.org/downloads/) | 1.3.4
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.37
 [libtiff](http://www.simplesystems.org/libtiff/) | v4.3.0
@@ -52,13 +53,13 @@ Name | Version
 [miniutf](https://github.com/dropbox/miniutf) | 
 [minizip](https://github.com/zlib-ng/minizip-ng) | 2.9.2
 [Modern C++ JSON schema validator](https://github.com/pboettch/json-schema-validator) | v2.2.0
-[msdfgen](https://github.com/Chlumsky/msdfgen) | v1.8
+[msdfgen](https://github.com/Chlumsky/msdfgen) | v1.10
 [muparser](https://github.com/beltoforion/muparser) | 2.3.3
 [nanoflann](https://github.com/jlblancoc/nanoflann) | v1.4.2
 [Native File Dialog Extended](https://github.com/btzy/nativefiledialog-extended) | 
 [nlohmann/json](https://github.com/nlohmann/json) | v3.10.5
 [Noto CJK](https://github.com/googlefonts/noto-cjk) | v20201206
-[Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.038
+[Noto Emoji](https://github.com/googlefonts/noto-emoji) | v2.040
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.5_rev1
 [OpenCV](https://github.com/opencv/opencv) | 4.5.1
@@ -79,6 +80,7 @@ Name | Version
 [Serial Communication Library](https://github.com/wjwwood/serial) | 
 [SFMT](https://github.com/MersenneTwister-Lab/SFMT) | 1.5.2
 [simde](https://github.com/nemequ/simde) | 0.7.2
+[skia](https://github.com/google/skia) | 0.38.2
 [Sol2](https://github.com/ThePhD/sol2) | v3.2.2
 [SoLoud](https://github.com/jarikomppa/soloud) | 
 [SoundTouch](https://gitlab.com/soundtouch/soundtouch) | 2.1.2

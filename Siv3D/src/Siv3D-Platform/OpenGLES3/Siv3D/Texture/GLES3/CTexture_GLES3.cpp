@@ -11,6 +11,7 @@
 
 # include "CTexture_GLES3.hpp"
 # include <Siv3D/Error.hpp>
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/System.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Texture/TextureCommon.hpp>
@@ -84,11 +85,11 @@ namespace s3d
 
 			if (*request.pMipmaps)
 			{
-				request.idResult.get() = createMipped(*request.pImage, *request.pMipmaps, *request.pDesc);
+				request.idResult.get() = create(*request.pImage, *request.pMipmaps, *request.pDesc);
 			}
 			else
 			{
-				request.idResult.get() = createUnmipped(*request.pImage, *request.pDesc);
+				request.idResult.get() = create(*request.pImage, *request.pDesc);
 			}
 
 			request.waiting.get() = false;
@@ -102,8 +103,14 @@ namespace s3d
 		return m_textures.size();
 	}
 
-	Texture::IDType CTexture_GLES3::createUnmipped(const Image& image, const TextureDesc desc)
+	Texture::IDType CTexture_GLES3::create(const Image& image, const TextureDesc desc)
 	{
+		// [Siv3D ToDo] GPU でミップマップを生成する
+		if (detail::HasMipMap(desc))
+		{
+			return create(image, ImageProcessing::GenerateMips(image), desc);
+		}
+
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
@@ -126,7 +133,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GLES3::createMipped(const Image& image, const Array<Image>& mips, const TextureDesc desc)
+	Texture::IDType CTexture_GLES3::create(const Image& image, const Array<Image>& mips, const TextureDesc desc)
 	{
 		if (not image)
 		{
@@ -180,7 +187,7 @@ namespace s3d
 		return createDynamic(size, initialData.data(), static_cast<uint32>(initialData.size() / size.y), format, desc);
 	}
 
-	Texture::IDType CTexture_GLES3::createRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth)
+	Texture::IDType CTexture_GLES3::createRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
@@ -199,7 +206,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GLES3::createRT(const Image& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_GLES3::createRT(const Image& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
@@ -219,7 +226,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GLES3::createRT(const Grid<float>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_GLES3::createRT(const Grid<float>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
@@ -239,7 +246,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GLES3::createRT(const Grid<Float2>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_GLES3::createRT(const Grid<Float2>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
@@ -259,7 +266,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GLES3::createRT(const Grid<Float4>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_GLES3::createRT(const Grid<Float4>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
@@ -279,7 +286,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GLES3::createMSRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth)
+	Texture::IDType CTexture_GLES3::createMSRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
@@ -346,6 +353,11 @@ namespace s3d
 	void CTexture_GLES3::clearRT(const Texture::IDType handleID, const ColorF& color)
 	{
 		m_textures[handleID]->clearRT(color);
+	}
+
+	void CTexture_GLES3::generateMips(const Texture::IDType handleID)
+	{
+
 	}
 
 	void CTexture_GLES3::readRT(const Texture::IDType handleID, Image& image)

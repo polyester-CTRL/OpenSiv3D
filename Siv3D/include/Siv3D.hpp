@@ -177,6 +177,9 @@
 // Disjoint-set (Union-find) | Disjoint-set (Union–find)
 # include <Siv3D/DisjointSet.hpp>
 
+// モートン順序 | Morton order
+# include <Siv3D/Morton.hpp>
+
 //////////////////////////////////////////////////
 //
 //	並列・並行処理 | Parallel and Concurrent
@@ -1032,10 +1035,10 @@
 // 文章読み上げオブジェクト | Text to speech object
 # include <Siv3D/Say.hpp>
 
-// KlatTTS のパラメータ | Paramters for KlatTTS
+// KlattTTS のパラメータ | Parameters for KlattTTS
 # include <Siv3D/KlattTTSParameters.hpp>
 
-// Klat 方式による音声読み上げ | Text-to-speech using Klatt's method
+// Klatt 方式による音声読み上げ | Text-to-speech using Klatt's method
 # include <Siv3D/KlattTTS.hpp>
 
 //////////////////////////////////////////////////
@@ -1532,6 +1535,8 @@
 
 # include <Siv3D/DebugCamera3D.hpp>
 
+# include <Siv3D/SimpleFollowCamera3D.hpp>
+
 //////////////////////////////////////////////////
 //
 //	シェーダー | Shader
@@ -1597,9 +1602,14 @@
 // ビデオ・テクスチャ | Video texture
 # include <Siv3D/VideoTexture.hpp>
 
+// レンダーテクスチャ | Render texture
 # include <Siv3D/RenderTexture.hpp>
 
+// マルチサンプルレンダーテクスチャ | Multisample render texture
 # include <Siv3D/MSRenderTexture.hpp>
+
+// 9 パッチテクスチャ | Nine-patch texture
+# include <Siv3D/NinePatch.hpp>
 
 //////////////////////////////////////////////////
 //
@@ -1620,6 +1630,7 @@
 // フォント描画方式 | Font rendering method
 # include <Siv3D/FontMethod.hpp>
 
+// 標準フォントの種類 | Standard font type
 # include <Siv3D/Typeface.hpp>
 
 // フォント | Font
@@ -1702,6 +1713,12 @@
 
 // エフェクト | Effect
 # include <Siv3D/Effect.hpp>
+
+// 軌跡 | Trail
+# include <Siv3D/Trail.hpp>
+
+// 軌跡のモーション | Trail motion
+# include <Siv3D/TrailMotion.hpp>
 
 //////////////////////////////////////////////////
 //
@@ -1811,7 +1828,7 @@
 
 //////////////////////////////////////////////////
 //
-//	拡張レンダリングエンジン | Rndering Engine Extension
+//	拡張レンダリングエンジン | Rendering Engine Extension
 //
 //////////////////////////////////////////////////
 
@@ -1820,10 +1837,11 @@
 
 //////////////////////////////////////////////////
 //
-//	トランプカード描画 | Palying Card
+//	トランプカード描画 | Playing Card
 //
 //////////////////////////////////////////////////
 
+// トランプカード描画 | Playing card
 # include <Siv3D/PlayingCard.hpp>
 
 //////////////////////////////////////////////////
@@ -1832,6 +1850,7 @@
 //
 //////////////////////////////////////////////////
 
+// OpenAI API | OpenAI API
 # include <Siv3D/OpenAI.hpp>
 
 //////////////////////////////////////////////////
@@ -1857,7 +1876,7 @@
 
 //////////////////////////////////////////////////
 //
-//	実験的なライブラリ | Exmperimental Libraries
+//	実験的なライブラリ | Experimental Libraries
 //
 //////////////////////////////////////////////////
 

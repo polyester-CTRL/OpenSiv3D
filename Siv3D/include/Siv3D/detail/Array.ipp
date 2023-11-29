@@ -935,7 +935,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	inline Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_t index) const
+	inline Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_t index) const&
 	{
 		if (index >= size())
 		{
@@ -949,6 +949,12 @@ namespace s3d
 		new_array.insert(new_array.end(), begin() + index + 1, end());
 
 		return new_array;
+	}
+
+	template <class Type, class Allocator>
+	inline Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_t index) &&
+	{
+		return std::move(remove_at(index));
 	}
 
 	template <class Type, class Allocator>
@@ -1155,7 +1161,9 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline Array<Type, Allocator> Array<Type, Allocator>::rotated(const std::ptrdiff_t count) const&
 	{
-		return std::move(Array(*this).rotate(count));
+		Array result{ *this };
+		result.rotate(count);
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1179,7 +1187,9 @@ namespace s3d
 	template <class T, std::enable_if_t<Meta::HasGreaterThan_v<T>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::rsorted() const&
 	{
-		return std::move(Array(*this).rsort());
+		Array result{ *this };
+		result.rsort();
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1222,7 +1232,9 @@ namespace s3d
 	SIV3D_CONCEPT_URBG_
 	inline Array<Type, Allocator> Array<Type, Allocator>::shuffled(URBG&& rbg) const&
 	{
-		return std::move(Array(*this).shuffle(std::forward<URBG>(rbg)));
+		Array result{ *this };
+		result.shuffle(std::forward<URBG>(rbg));
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1296,7 +1308,9 @@ namespace s3d
 	template <class T, std::enable_if_t<Meta::HasLessThan_v<T>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::sorted() const&
 	{
-		return std::move(Array(*this).sort());
+		Array result{ *this };
+		result.sort();
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1310,7 +1324,9 @@ namespace s3d
 	template <class T, std::enable_if_t<Meta::HasLessThan_v<T>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() const&
 	{
-		return std::move(Array(*this).stable_sort());
+		Array result{ *this };
+		result.stable_sort();
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1335,14 +1351,18 @@ namespace s3d
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type, Type>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) const&
 	{
-		return std::move(Array(*this).sort_by(f));
+		Array result{ *this };
+		result.sort_by(f);
+		return result;
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, Type, Type>>*>
 	inline Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) const&
 	{
-		return std::move(Array(*this).stable_sort_by(f));
+		Array result{ *this };
+		result.stable_sort_by(f);
+		return result;
 	}
 
 	template <class Type, class Allocator>
@@ -1422,7 +1442,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	inline Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const
+	inline Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const&
 	{
 		Array result;
 
@@ -1431,6 +1451,14 @@ namespace s3d
 		std::copy_if(begin(), end(), std::back_inserter(result), std::ref(pred));
 
 		return result;
+	}
+
+	template <class Type, class Allocator>
+	inline Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() &&
+	{
+		// stable_unique() が最適化されたら次の実装に変更する
+		// return std::move(stable_unique());
+		return stable_uniqued();
 	}
 
 	template <class Type, class Allocator>
@@ -1446,7 +1474,9 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline Array<Type, Allocator> Array<Type, Allocator>::sorted_and_uniqued() const&
 	{
-		return std::move(Array(*this).sort_and_unique());
+		Array result{ *this };
+		result.sort_and_unique();
+		return result;
 	}
 
 	template <class Type, class Allocator>

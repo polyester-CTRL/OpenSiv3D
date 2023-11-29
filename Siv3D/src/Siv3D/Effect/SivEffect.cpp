@@ -11,20 +11,28 @@
 
 # include <Siv3D/Effect.hpp>
 # include <Siv3D/Effect/IEffect.hpp>
-# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
+# include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
 
 namespace s3d
 {
+	namespace detail
+	{
+		static void CheckEngine()
+		{
+			if (not Siv3DEngine::isActive())
+			{
+				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, U"Effect");
+				std::exit(EXIT_FAILURE);
+			}
+		}
+	}
+
 	template <>
 	AssetIDWrapper<AssetHandle<Effect>>::AssetIDWrapper()
 	{
-		if (not Siv3DEngine::isActive())
-		{
-			FreestandingMessageBox::ShowError(U"`Effect` must be initialized after engine-setup. Please fix the C++ code.");
-			std::abort();
-		}
+		detail::CheckEngine();
 	}
 
 	template <>
@@ -42,7 +50,7 @@ namespace s3d
 	}
 
 	Effect::Effect(const double maxLifeTimeSec)
-		: AssetHandle{ std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Effect)->create(maxLifeTimeSec)) }
+		: AssetHandle{ (detail::CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Effect)->create(maxLifeTimeSec))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->created();
 	}

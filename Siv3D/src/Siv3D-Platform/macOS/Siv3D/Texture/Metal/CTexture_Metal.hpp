@@ -31,25 +31,25 @@ namespace s3d
 
 		size_t getTextureCount() const override;
 		
-		Texture::IDType createUnmipped(const Image& image, TextureDesc desc) override;
+		Texture::IDType create(const Image& image, TextureDesc desc) override;
 
-		Texture::IDType createMipped(const Image& image, const Array<Image>& mips, TextureDesc desc) override;
+		Texture::IDType create(const Image& image, const Array<Image>& mips, TextureDesc desc) override;
 		
 		Texture::IDType createDynamic(const Size& size, const void* pData, uint32 stride, const TextureFormat& format, TextureDesc desc) override;
 
 		Texture::IDType createDynamic(const Size& size, const ColorF& color, const TextureFormat& format, TextureDesc desc) override;
 
-		Texture::IDType createRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth) override;
+		Texture::IDType createRT(const Size& size, const TextureFormat& format, HasDepth hasDepth, HasMipMap hasMipMap) override;
 
-		Texture::IDType createRT(const Image& image, const HasDepth hasDepth) override;
+		Texture::IDType createRT(const Image& image, HasDepth hasDepth, HasMipMap hasMipMap) override;
 
-		Texture::IDType createRT(const Grid<float>& image, const HasDepth hasDepth) override;
+		Texture::IDType createRT(const Grid<float>& image, HasDepth hasDepth, HasMipMap hasMipMap) override;
 
-		Texture::IDType createRT(const Grid<Float2>& image, const HasDepth hasDepth) override;
+		Texture::IDType createRT(const Grid<Float2>& image, HasDepth hasDepth, HasMipMap hasMipMap) override;
 
-		Texture::IDType createRT(const Grid<Float4>& image, const HasDepth hasDepth) override;
+		Texture::IDType createRT(const Grid<Float4>& image, HasDepth hasDepth, HasMipMap hasMipMap) override;
 
-		Texture::IDType createMSRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth) override;
+		Texture::IDType createMSRT(const Size& size, const TextureFormat& format, HasDepth hasDepth, HasMipMap hasMipMap) override;
 		
 		void release(Texture::IDType handleID) override;
 
@@ -71,6 +71,8 @@ namespace s3d
 
 
 		void clearRT(Texture::IDType handleID, const ColorF& color) override;
+
+		void generateMips(Texture::IDType handleID) override;
 
 		void readRT(Texture::IDType handleID, Image& image) override;
 
