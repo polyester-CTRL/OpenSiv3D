@@ -27,6 +27,12 @@ namespace s3d
 		, z{ static_cast<value_type>(_z) } {}
 
 	template <class Type>
+	inline constexpr Vector3D<Type>::Vector3D(const Point3D p) noexcept
+		: x{ static_cast<value_type>(p.x) }
+		, y{ static_cast<value_type>(p.y) }
+		, z{ static_cast<value_type>(p.z) } {}
+
+	template <class Type>
 	template <class U>
 	inline constexpr Vector3D<Type>::Vector3D(const Vector3D<U>& v) noexcept
 		: x{ static_cast<value_type>(v.x) }
@@ -119,7 +125,7 @@ namespace s3d
 	template <class Type>
 	inline constexpr Vector3D<Type> Vector3D<Type>::operator /(const value_type s) const noexcept
 	{
-		return *this * (static_cast<value_type>(1.0) / s);
+		return (*this * (static_cast<value_type>(1.0) / s));
 	}
 
 	template <class Type>
@@ -224,6 +230,24 @@ namespace s3d
 	}
 
 	template <class Type>
+	inline constexpr Vector3D<Type> Vector3D<Type>::withX(const value_type _x) const noexcept
+	{
+		return{ _x, y, z };
+	}
+
+	template <class Type>
+	inline constexpr Vector3D<Type> Vector3D<Type>::withY(const value_type _y) const noexcept
+	{
+		return{ x, _y, z };
+	}
+
+	template <class Type>
+	inline constexpr Vector3D<Type> Vector3D<Type>::withZ(const value_type _z) const noexcept
+	{
+		return{ x, y, _z };
+	}
+
+	template <class Type>
 	inline constexpr Vector3D<Type>& Vector3D<Type>::set(const value_type _x, const value_type _y, const value_type _z) noexcept
 	{
 		x = _x; y = _y; z = _z;
@@ -265,7 +289,7 @@ namespace s3d
 	template <class Type>
 	inline constexpr typename Vector3D<Type>::value_type Vector3D<Type>::dot(const Vector3D v) const noexcept
 	{
-		return (x * v.x) + (y * v.y) + (z * v.z);
+		return ((x * v.x) + (y * v.y) + (z * v.z));
 	}
 
 	template <class Type>
@@ -315,7 +339,7 @@ namespace s3d
 	template <class Type>
 	inline constexpr typename Vector3D<Type>::value_type Vector3D<Type>::lengthSq() const noexcept
 	{
-		return (x * x) + (y * y) + (z * z);
+		return ((x * x) + (y * y) + (z * z));
 	}
 
 	template <class Type>
@@ -443,6 +467,12 @@ namespace s3d
 	inline constexpr Vector3D<Type> Vector3D<Type>::lerp(const Vector3D other, const value_type f) const noexcept
 	{
 		return{ (x + (other.x - x) * f), (y + (other.y - y) * f), (z + (other.z - z) * f) };
+	}
+
+	template <class Type>
+	inline constexpr Point3D Vector3D<Type>::asPoint3D() const noexcept
+	{
+		return{ static_cast<Point3D::value_type>(x), static_cast<Point3D::value_type>(y), static_cast<Point3D::value_type>(z) };
 	}
 
 	template <class Type>

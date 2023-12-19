@@ -13,21 +13,29 @@
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/System.hpp>
-# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
+# include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
 
 namespace s3d
 {
+	namespace detail
+	{
+		static void CheckEngine()
+		{
+			if (not Siv3DEngine::isActive())
+			{
+				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, U"VertexShader");
+				std::exit(EXIT_FAILURE);
+			}
+		}
+	}
+
 	template <>
 	AssetIDWrapper<AssetHandle<VertexShader>>::AssetIDWrapper()
 	{
-		if (not Siv3DEngine::isActive())
-		{
-			FreestandingMessageBox::ShowError(U"`VertexShader` must be initialized after engine-setup. Please fix the C++ code.");
-			std::abort();
-		}
+		detail::CheckEngine();
 	}
 
 	template <>
@@ -47,7 +55,7 @@ namespace s3d
 	VertexShader::VertexShader() {}
 
 	VertexShader::VertexShader(const FilePathView path, const StringView entryPoint, const Array<ConstantBufferBinding>& bindings)
-		: AssetHandle{ std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromFile(path, entryPoint, bindings)) }
+		: AssetHandle{ (detail::CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromFile(path, entryPoint, bindings))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->created();
 	}

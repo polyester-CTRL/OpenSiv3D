@@ -12,6 +12,7 @@
 # include "CTexture_D3D11.hpp"
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Byte.hpp>
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/HalfFloat.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
@@ -109,7 +110,7 @@ namespace s3d
 		return m_textures.size();
 	}
 
-	Texture::IDType CTexture_D3D11::createUnmipped(const Image& image, const TextureDesc desc)
+	Texture::IDType CTexture_D3D11::create(const Image& image, const TextureDesc desc)
 	{
 		if (not image)
 		{
@@ -123,11 +124,16 @@ namespace s3d
 			return Texture::IDType::NullAsset();
 		}
 
+		if (detail::HasMipMap(desc))
+		{
+			texture->generateMips(m_context);
+		}
+
 		const String info = U"(type: Default, size:{0}x{1}, format: {2})"_fmt(image.width(), image.height(), texture->getDesc().format.name());
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_D3D11::createMipped(const Image& image, const Array<Image>& mips, const TextureDesc desc)
+	Texture::IDType CTexture_D3D11::create(const Image& image, const Array<Image>& mips, const TextureDesc desc)
 	{
 		if (not image)
 		{
@@ -175,14 +181,14 @@ namespace s3d
 		return createDynamic(size, initialData.data(), static_cast<uint32>(initialData.size() / size.y), format, desc);
 	}
 
-	Texture::IDType CTexture_D3D11::createRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth)
+	Texture::IDType CTexture_D3D11::createRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = (format.isSRGB() ? TextureDesc::UnmippedSRGB : TextureDesc::Unmipped);
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), format.isSRGB());
 		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, size, format, desc, hasDepth);
 
 		if (not texture->isInitialized())
@@ -194,14 +200,14 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_D3D11::createRT(const Image& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_D3D11::createRT(const Image& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = TextureDesc::Unmipped;
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), false);
 		const TextureFormat format = TextureFormat::R8G8B8A8_Unorm;
 		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, image, format, desc, hasDepth);
 
@@ -210,18 +216,23 @@ namespace s3d
 			return Texture::IDType::NullAsset();
 		}
 
+		if (hasMipMap)
+		{
+			texture->generateMips(m_context);
+		}
+
 		const String info = U"(type: Render, size:{0}x{1}, format: {2})"_fmt(image.width(), image.height(), texture->getDesc().format.name());
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_D3D11::createRT(const Grid<float>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_D3D11::createRT(const Grid<float>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = TextureDesc::Unmipped;
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), false);
 		const TextureFormat format = TextureFormat::R32_Float;
 		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, image, format, desc, hasDepth);
 
@@ -230,18 +241,23 @@ namespace s3d
 			return Texture::IDType::NullAsset();
 		}
 
+		if (hasMipMap)
+		{
+			texture->generateMips(m_context);
+		}
+
 		const String info = U"(type: Render, size:{0}x{1}, format: {2})"_fmt(image.width(), image.height(), texture->getDesc().format.name());
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_D3D11::createRT(const Grid<Float2>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_D3D11::createRT(const Grid<Float2>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = TextureDesc::Unmipped;
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), false);
 		const TextureFormat format = TextureFormat::R32G32_Float;
 		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, image, format, desc, hasDepth);
 
@@ -250,18 +266,23 @@ namespace s3d
 			return Texture::IDType::NullAsset();
 		}
 
+		if (hasMipMap)
+		{
+			texture->generateMips(m_context);
+		}
+
 		const String info = U"(type: Render, size:{0}x{1}, format: {2})"_fmt(image.width(), image.height(), texture->getDesc().format.name());
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_D3D11::createRT(const Grid<Float4>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_D3D11::createRT(const Grid<Float4>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = TextureDesc::Unmipped;
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), false);
 		const TextureFormat format = TextureFormat::R32G32B32A32_Float;
 		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::Render{}, m_device, image, format, desc, hasDepth);
 
@@ -270,11 +291,16 @@ namespace s3d
 			return Texture::IDType::NullAsset();
 		}
 
+		if (hasMipMap)
+		{
+			texture->generateMips(m_context);
+		}
+
 		const String info = U"(type: Render, size:{0}x{1}, format: {2})"_fmt(image.width(), image.height(), texture->getDesc().format.name());
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_D3D11::createMSRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth)
+	Texture::IDType CTexture_D3D11::createMSRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not m_multiSampleAvailable[FromEnum(format.value())]) // もし 4x MSAA がサポートされていなければ
 		{
@@ -287,7 +313,7 @@ namespace s3d
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = (format.isSRGB() ? TextureDesc::UnmippedSRGB : TextureDesc::Unmipped);
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), format.isSRGB());
 		auto texture = std::make_unique<D3D11Texture>(D3D11Texture::MSRender{}, m_device, size, format, desc, hasDepth);
 
 		if (not texture->isInitialized())
@@ -347,6 +373,11 @@ namespace s3d
 	void CTexture_D3D11::clearRT(const Texture::IDType handleID, const ColorF& color)
 	{
 		m_textures[handleID]->clearRT(m_context, color);
+	}
+
+	void CTexture_D3D11::generateMips(const Texture::IDType handleID)
+	{
+		m_textures[handleID]->generateMips(m_context);
 	}
 
 	void CTexture_D3D11::readRT(const Texture::IDType handleID, Image& image)

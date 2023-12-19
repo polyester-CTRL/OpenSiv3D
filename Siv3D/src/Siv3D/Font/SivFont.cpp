@@ -18,7 +18,7 @@
 # include <Siv3D/MSDFGlyph.hpp>
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/Font/IFont.hpp>
-# include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
+# include <Siv3D/Troubleshooting/Troubleshooting.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
 # include <Siv3D/MeshData.hpp>
@@ -82,16 +82,21 @@ namespace s3d
 				.xOffset = (offsetX * 0.5 * scale),
 			};
 		}
+
+		static void CheckEngine()
+		{
+			if (not Siv3DEngine::isActive())
+			{
+				Troubleshooting::Show(Troubleshooting::Error::AssetInitializationBeforeEngineStartup, U"Font");
+				std::exit(EXIT_FAILURE);
+			}
+		}
 	}
 
 	template <>
 	AssetIDWrapper<AssetHandle<Font>>::AssetIDWrapper()
 	{
-		if (not Siv3DEngine::isActive())
-		{
-			FreestandingMessageBox::ShowError(U"`Font` must be initialized after engine-setup. Please fix the C++ code.");
-			std::abort();
-		}
+		detail::CheckEngine();
 	}
 
 	template <>
@@ -123,13 +128,13 @@ namespace s3d
 		: Font{ fontMethod, fontSize, path, 0, style } {}
 
 	Font::Font(const FontMethod fontMethod, const int32 fontSize, const FilePathView path, const size_t faceIndex, const FontStyle style)
-		: AssetHandle{ std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, fontMethod, fontSize, style)) }
+		: AssetHandle{ (detail::CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(path, faceIndex, fontMethod, fontSize, style))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->created();
 	}
 
 	Font::Font(const FontMethod fontMethod, const int32 fontSize, const Typeface typeface, const FontStyle style)
-		: AssetHandle{ std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(typeface, fontMethod, fontSize, style)) }
+		: AssetHandle{ (detail::CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(typeface, fontMethod, fontSize, style))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->created();
 	}

@@ -11,6 +11,7 @@
 
 # include "CTexture_GL4.hpp"
 # include <Siv3D/Error.hpp>
+# include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/System.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Texture/TextureCommon.hpp>
@@ -84,11 +85,11 @@ namespace s3d
 
 			if (*request.pMipmaps)
 			{
-				request.idResult.get() = createMipped(*request.pImage, *request.pMipmaps, *request.pDesc);
+				request.idResult.get() = create(*request.pImage, *request.pMipmaps, *request.pDesc);
 			}
 			else
 			{
-				request.idResult.get() = createUnmipped(*request.pImage, *request.pDesc);
+				request.idResult.get() = create(*request.pImage, *request.pDesc);
 			}
 
 			request.waiting.get() = false;
@@ -102,7 +103,7 @@ namespace s3d
 		return m_textures.size();
 	}
 
-	Texture::IDType CTexture_GL4::createUnmipped(const Image& image, const TextureDesc desc)
+	Texture::IDType CTexture_GL4::create(const Image& image, const TextureDesc desc)
 	{
 		if (not image)
 		{
@@ -126,7 +127,7 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GL4::createMipped(const Image& image, const Array<Image>& mips, const TextureDesc desc)
+	Texture::IDType CTexture_GL4::create(const Image& image, const Array<Image>& mips, const TextureDesc desc)
 	{
 		if (not image)
 		{
@@ -180,14 +181,14 @@ namespace s3d
 		return createDynamic(size, initialData.data(), static_cast<uint32>(initialData.size() / size.y), format, desc);
 	}
 
-	Texture::IDType CTexture_GL4::createRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth)
+	Texture::IDType CTexture_GL4::createRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = (format.isSRGB() ? TextureDesc::UnmippedSRGB : TextureDesc::Unmipped);
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), format.isSRGB());
 		auto texture = std::make_unique<GL4Texture>(GL4Texture::Render{}, size, format, desc, hasDepth);
 
 		if (not texture->isInitialized())
@@ -199,14 +200,14 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GL4::createRT(const Image& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_GL4::createRT(const Image& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = TextureDesc::Unmipped;
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), false);
 		const TextureFormat format = TextureFormat::R8G8B8A8_Unorm;
 		auto texture = std::make_unique<GL4Texture>(GL4Texture::Render{}, image, format, desc, hasDepth);
 
@@ -219,14 +220,14 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GL4::createRT(const Grid<float>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_GL4::createRT(const Grid<float>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = TextureDesc::Unmipped;
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), false);
 		const TextureFormat format = TextureFormat::R32_Float;
 		auto texture = std::make_unique<GL4Texture>(GL4Texture::Render{}, image, format, desc, hasDepth);
 
@@ -239,14 +240,14 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GL4::createRT(const Grid<Float2>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_GL4::createRT(const Grid<Float2>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = TextureDesc::Unmipped;
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), false);
 		const TextureFormat format = TextureFormat::R32G32_Float;
 		auto texture = std::make_unique<GL4Texture>(GL4Texture::Render{}, image, format, desc, hasDepth);
 
@@ -259,14 +260,14 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GL4::createRT(const Grid<Float4>& image, const HasDepth hasDepth)
+	Texture::IDType CTexture_GL4::createRT(const Grid<Float4>& image, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if (not image)
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = TextureDesc::Unmipped;
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), false);
 		const TextureFormat format = TextureFormat::R32G32B32A32_Float;
 		auto texture = std::make_unique<GL4Texture>(GL4Texture::Render{}, image, format, desc, hasDepth);
 
@@ -279,14 +280,14 @@ namespace s3d
 		return m_textures.add(std::move(texture), info);
 	}
 
-	Texture::IDType CTexture_GL4::createMSRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth)
+	Texture::IDType CTexture_GL4::createMSRT(const Size& size, const TextureFormat& format, const HasDepth hasDepth, const HasMipMap hasMipMap)
 	{
 		if ((size.x <= 0) || (size.y <= 0))
 		{
 			return Texture::IDType::NullAsset();
 		}
 
-		const TextureDesc desc = (format.isSRGB() ? TextureDesc::UnmippedSRGB : TextureDesc::Unmipped);
+		const TextureDesc desc = detail::MakeTextureDesc(hasMipMap.getBool(), format.isSRGB());
 		auto texture = std::make_unique<GL4Texture>(GL4Texture::MSRender{}, size, format, desc, hasDepth);
 
 		if (not texture->isInitialized())
@@ -346,6 +347,11 @@ namespace s3d
 	void CTexture_GL4::clearRT(const Texture::IDType handleID, const ColorF& color)
 	{
 		m_textures[handleID]->clearRT(color);
+	}
+
+	void CTexture_GL4::generateMips(const Texture::IDType handleID)
+	{
+		m_textures[handleID]->generateMips();
 	}
 
 	void CTexture_GL4::readRT(const Texture::IDType handleID, Image& image)

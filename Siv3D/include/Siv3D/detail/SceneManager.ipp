@@ -163,7 +163,13 @@ namespace s3d
 	}
 
 	template <class State, class Data>
-	inline bool SceneManager<State, Data>::init(const State& state)
+	inline bool SceneManager<State, Data>::init(const State& state, const Duration& transitionTime)
+	{
+		return init(state, static_cast<int32>(transitionTime.count() * 1000));
+	}
+
+	template <class State, class Data>
+	inline bool SceneManager<State, Data>::init(const State& state, int32 transitionTimeMillisec)
 	{
 		if (m_current)
 		{
@@ -180,6 +186,10 @@ namespace s3d
 		m_currentState = state;
 
 		m_current = it->second();
+
+		m_nextState = state;
+
+		m_transitionTimeMillisec = transitionTimeMillisec;
 
 		if (hasError())
 		{
@@ -279,7 +289,7 @@ namespace s3d
 	}
 
 	template <class State, class Data>
-	inline const std::shared_ptr<const Data> SceneManager<State, Data>::get() const noexcept
+	inline std::shared_ptr<const Data> SceneManager<State, Data>::get() const noexcept
 	{
 		return m_data;
 	}

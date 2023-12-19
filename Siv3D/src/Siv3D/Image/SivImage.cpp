@@ -393,6 +393,17 @@ namespace s3d
 		}
 	}
 
+	bool operator ==(const Image& lhs, const Image& rhs) noexcept
+	{
+		return ((lhs.size() == rhs.size())
+			&& (std::memcmp(lhs.data(), rhs.data(), lhs.size_bytes()) == 0));
+	}
+
+	bool operator !=(const Image& lhs, const Image& rhs) noexcept
+	{
+		return (not (lhs == rhs));
+	}
+
 	void Image::fill(const Color color) noexcept
 	{
 		std::fill(m_data.begin(), m_data.end(), color);
@@ -527,65 +538,276 @@ namespace s3d
 		return{ (r / 255.0), (g / 255.0), (b / 255.0), (a / 255.0) };
 	}
 
-	Image Image::clipped(const Rect& rect) const
+	Image Image::clipped(const Rect& rect) const&
 	{
 		if (not detail::IsValidImageSize(rect.size))
 		{
 			return{};
 		}
 
-		Image tmp(rect.size, Color{ 0, 0 });
+		const int32 srcTop = Clamp(rect.topY(), 0, height());
+		const int32 srcBottom = Clamp(rect.bottomY(), 0, height());
+		const int32 srcLeft = Clamp(rect.leftX(), 0, width());
+		const int32 srcRight = Clamp(rect.rightX(), 0, width());
 
-		const int32 h = static_cast<int32>(m_height);
-		const int32 w = static_cast<int32>(m_width);
+		const int32 srcAdvance = width();
+		const int32 srcStart = (srcTop * srcAdvance + srcLeft);
 
-		// [Siv3D ToDo] 最適化
-		for (int32 y = 0; y < rect.h; ++y)
+		const int32 clipHeight = (srcBottom - srcTop);
+		const int32 clipWidth = (srcRight - srcLeft);
+		const size_t clipWidthBytes = (clipWidth * sizeof(Color));
+
+		const int32 dstTop = Clamp(-rect.topY(), 0, rect.h);
+		const int32 dstLeft = Clamp(-rect.leftX(), 0, rect.w);
+
+		const int32 dstAdvance = rect.w;
+		const int32 dstStart = (dstTop * dstAdvance + dstLeft);
+
+		Image image(rect.size, Color{ 0, 0 });
+
+		if ((clipHeight == 0) || (clipWidth == 0))
 		{
-			const int32 sy = y + rect.y;
+			return image;
+		}
 
-			if (0 <= sy && sy < h)
+		const Color* pSrc = (data() + srcStart);
+		Color* pDst = (image.data() + dstStart);
+
+		for (int32 y = 0; y < clipHeight; ++y)
+		{
+			std::memcpy(pDst, pSrc, clipWidthBytes);
+
+			pSrc += srcAdvance;
+			pDst += dstAdvance;
+		}
+
+		return image;
+	}
+
+	Image Image::clipped(const Rect& rect) &&
+	{
+		if (not detail::IsValidImageSize(rect.size))
+		{
+			return{};
+		}
+
+		if (rect == Rect{ 0, 0, size() })
+		{
+			return std::move(*this);
+		}
+
+		const int32 srcNumPixels = num_pixels();
+		const int32 dstNumPixels = (rect.w * rect.h);
+
+		if (m_data.capacity() < dstNumPixels)
+		{
+			return clipped(rect);
+		}
+
+		const int32 srcTop = Clamp(rect.topY(), 0, height());
+		const int32 srcBottom = Clamp(rect.bottomY(), 0, height());
+		const int32 srcLeft = Clamp(rect.leftX(), 0, width());
+		const int32 srcRight = Clamp(rect.rightX(), 0, width());
+
+		const int32 srcAdvance = width();
+		const int32 srcStart = (srcTop * srcAdvance + srcLeft);
+
+		const int32 clipHeight = (srcBottom - srcTop);
+		const int32 clipWidth = (srcRight - srcLeft);
+		const size_t clipWidthBytes = (clipWidth * sizeof(Color));
+
+		const int32 dstTop = Clamp(-rect.topY(), 0, rect.h);
+		const int32 dstLeft = Clamp(-rect.leftX(), 0, rect.w);
+
+		const int32 dstAdvance = rect.w;
+		const int32 dstStart = (dstTop * dstAdvance + dstLeft);
+		const int32 dstEnd = (dstStart + (clipHeight - 1) * dstAdvance + clipWidth);
+
+		if ((clipHeight == 0) || (clipWidth == 0))
+		{
+			resize(rect.size, Color{ 0, 0 });
+
+			return std::move(*this);
+		}
+
+		const int32 paddingWidth = (dstAdvance - clipWidth);
+		const size_t paddingWidthBytes = (paddingWidth * sizeof(Color));
+
+		if (srcNumPixels < dstNumPixels)
+		{
+			resize(rect.size);
+		}
+
+		if (srcAdvance < dstAdvance)
+		{
+			// 次式を満たす最小のインデックス yMid
+			//     (srcStart + yMid * srcAdvance) < (dstStart + yMid * dstAdvance)
+
+			const int32 yMid = Clamp(((srcStart - dstStart) / (dstAdvance - srcAdvance) + 1), 0, clipHeight);
+
+			if (0 < yMid)
 			{
-				for (int32 x = 0; x < rect.w; ++x)
-				{
-					const int32 sx = x + rect.x;
+				const Color* pSrc = (data() + srcStart);
+				Color* pDst = (data() + dstStart);
 
-					if (0 <= sx && sx < w)
-					{
-						tmp[y][x] = operator[](sy)[sx];
-					}
+				std::memmove(pDst, pSrc, clipWidthBytes);
+
+				for (int32 y = 1; y < yMid; ++y)
+				{
+					pSrc += srcAdvance;
+					pDst += dstAdvance;
+
+					std::memset((pDst - paddingWidth), 0, paddingWidthBytes);
+
+					std::memmove(pDst, pSrc, clipWidthBytes);
+				}
+			}
+
+			if (yMid < clipHeight)
+			{
+				const Color* pSrc = (data() + srcStart + (clipHeight - 1) * srcAdvance);
+				Color* pDst = (data() + dstStart + (clipHeight - 1) * dstAdvance);
+
+				std::memmove(pDst, pSrc, clipWidthBytes);
+
+				for (int32 y = (clipHeight - 2); y >= yMid; --y)
+				{
+					pSrc -= srcAdvance;
+					pDst -= dstAdvance;
+
+					std::memset((pDst + clipWidth), 0, paddingWidthBytes);
+
+					std::memmove(pDst, pSrc, clipWidthBytes);
+				}
+
+				if (0 < yMid)
+				{
+					std::memset((pDst - paddingWidth), 0, paddingWidthBytes);
+				}
+			}
+		}
+		else
+		{
+			// 1. srcAdvance == dstAdvance のとき
+			//     srcStart < dstStart ならば yMid = clipHeight
+			//     srcStart > dstStart ならば yMid = 0
+			// 2. srcAdvance > dstAdvance のとき
+			//     次式を満たす最小のインデックス yMid
+			//	       (srcStart + yMid * srcAdvance) > (dstStart + yMid * dstAdvance)
+
+			const int32 yMid =
+				(srcAdvance == dstAdvance)
+					? (srcStart < dstStart)
+						? clipHeight
+						: 0
+					: Clamp(((dstStart - srcStart) / (srcAdvance - dstAdvance) + 1), 0, clipHeight);
+
+			if (0 < yMid)
+			{
+				const Color* pSrc = (data() + srcStart + (yMid - 1) * srcAdvance);
+				Color* pDst = (data() + dstStart + (yMid - 1) * dstAdvance);
+
+				std::memmove(pDst, pSrc, clipWidthBytes);
+
+				for (int32 y = (yMid - 2); y >= 0; --y)
+				{
+					pSrc -= srcAdvance;
+					pDst -= dstAdvance;
+
+					std::memset((pDst + clipWidth), 0, paddingWidthBytes);
+
+					std::memmove(pDst, pSrc, clipWidthBytes);
+				}
+			}
+
+			if (yMid < clipHeight)
+			{
+				const Color* pSrc = (data() + srcStart + yMid * srcAdvance);
+				Color* pDst = (data() + dstStart + yMid * dstAdvance);
+
+				if (0 < yMid)
+				{
+					std::memset((pDst - paddingWidth), 0, paddingWidthBytes);
+				}
+
+				std::memmove(pDst, pSrc, clipWidthBytes);
+
+				for (int32 y = (yMid + 1); y < clipHeight; ++y)
+				{
+					pSrc += srcAdvance;
+					pDst += dstAdvance;
+
+					std::memset((pDst - paddingWidth), 0, paddingWidthBytes);
+
+					std::memmove(pDst, pSrc, clipWidthBytes);
 				}
 			}
 		}
 
-		return tmp;
+		std::memset(data(), 0, (Min(srcNumPixels, dstStart) * sizeof(Color)));
+
+		std::memset((data() + dstEnd), 0, (Min(Max(0, (srcNumPixels - dstEnd)), (dstNumPixels - dstEnd)) * sizeof(Color)));
+
+		if (dstNumPixels < srcNumPixels)
+		{
+			resize(rect.size);
+		}
+
+		return std::move(*this);
 	}
 
-	Image Image::clipped(const int32 x, const int32 y, const int32 w, const int32 h) const
+	Image Image::clipped(const int32 x, const int32 y, const int32 w, const int32 h) const&
 	{
 		return clipped(Rect{ x, y, w, h });
 	}
 
-	Image Image::clipped(const Point& pos, const int32 w, const int32 h) const
+	Image Image::clipped(const int32 x, const int32 y, const int32 w, const int32 h) &&
+	{
+		return std::move(*this).clipped(Rect{ x, y, w, h });
+	}
+
+	Image Image::clipped(const Point& pos, const int32 w, const int32 h) const&
 	{
 		return clipped(Rect{ pos, w, h });
 	}
 
-	Image Image::clipped(const int32 x, const int32 y, const Size& size) const
+	Image Image::clipped(const Point& pos, const int32 w, const int32 h) &&
+	{
+		return std::move(*this).clipped(Rect{ pos, w, h });
+	}
+
+	Image Image::clipped(const int32 x, const int32 y, const Size& size) const&
 	{
 		return clipped(Rect{ x, y, size });
 	}
 
-	Image Image::clipped(const Point& pos, const Size& size) const
+	Image Image::clipped(const int32 x, const int32 y, const Size& size) &&
+	{
+		return std::move(*this).clipped(Rect{ x, y, size });
+	}
+
+	Image Image::clipped(const Point& pos, const Size& size) const&
 	{
 		return clipped(Rect{ pos, size });
 	}
 
-	Image Image::squareClipped() const
+	Image Image::clipped(const Point& pos, const Size& size) &&
+	{
+		return std::move(*this).clipped(Rect{ pos, size });
+	}
+
+	Image Image::squareClipped() const&
 	{
 		const int32 size = Min(m_width, m_height);
 
 		return clipped(((m_width - size) / 2), ((m_height - size) / 2), size, size);
+	}
+
+	Image Image::squareClipped() &&
+	{
+		const int32 size = Min(m_width, m_height);
+
+		return std::move(*this).clipped(((m_width - size) / 2), ((m_height - size) / 2), size, size);
 	}
 
 	Image& Image::RGBAtoBGRA()
@@ -733,7 +955,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::negated() const
+	Image Image::negated() const&
 	{
 		// 1. パラメータチェック
 		{
@@ -754,6 +976,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::negated() &&
+	{
+		return std::move(negate());
 	}
 
 	Image& Image::grayscale()
@@ -780,7 +1007,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::grayscaled() const
+	Image Image::grayscaled() const&
 	{
 		// 1. パラメータチェック
 		{
@@ -806,6 +1033,11 @@ namespace s3d
 		}
 	}
 
+	Image Image::grayscaled() &&
+	{
+		return std::move(grayscale());
+	}
+
 	Image& Image::sepia()
 	{
 		// 1. パラメータチェック
@@ -827,7 +1059,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::sepiaed() const
+	Image Image::sepiaed() const&
 	{
 		// 1. パラメータチェック
 		{
@@ -848,6 +1080,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::sepiaed() &&
+	{
+		return std::move(sepia());
 	}
 
 	Image& Image::posterize(const int32 level)
@@ -876,7 +1113,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::posterized(const int32 level) const
+	Image Image::posterized(const int32 level) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -902,6 +1139,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::posterized(const int32 level) &&
+	{
+		return std::move(posterize(level));
 	}
 
 	Image& Image::brighten(const int32 level)
@@ -939,7 +1181,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::brightened(const int32 level) const
+	Image Image::brightened(const int32 level) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -976,6 +1218,11 @@ namespace s3d
 		}
 	}
 
+	Image Image::brightened(const int32 level) &&
+	{
+		return std::move(brighten(level));
+	}
+
 	Image& Image::mirror()
 	{
 		// 1. パラメータチェック
@@ -1001,7 +1248,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::mirrored() const
+	Image Image::mirrored() const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1034,6 +1281,11 @@ namespace s3d
 		}
 	}
 
+	Image Image::mirrored() &&
+	{
+		return std::move(mirror());
+	}
+
 	Image& Image::flip()
 	{
 		// 1. パラメータチェック
@@ -1061,7 +1313,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::flipped() const
+	Image Image::flipped() const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1088,6 +1340,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::flipped() &&
+	{
+		return std::move(flip());
 	}
 
 	Image& Image::rotate90()
@@ -1122,7 +1379,25 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::rotated90() const
+	Image& Image::rotate90(int32 n)
+	{
+		switch (n % 4) // 時計回りに何回 90° 回転するか
+		{
+		case 1:
+		case -3:
+			return rotate90(); // 1 回または -3 回
+		case 2:
+		case -2:
+			return rotate180(); // 2 回または -2 回
+		case 3:
+		case -1:
+			return rotate270(); // 3 回または -1 回
+		default:
+			return *this; // 0 回
+		}
+	}
+
+	Image Image::rotated90() const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1152,6 +1427,49 @@ namespace s3d
 		}
 	}
 
+	Image Image::rotated90() &&
+	{
+		// rotate90() が最適化されたら次の実装に変更する
+		// return std::move(rotate90());
+		return rotated90();
+	}
+
+	Image Image::rotated90(int32 n) const&
+	{
+		switch (n % 4) // 時計回りに何回 90° 回転するか
+		{
+		case 1:
+		case -3:
+			return rotated90(); // 1 回または -3 回
+		case 2:
+		case -2:
+			return rotated180(); // 2 回または -2 回
+		case 3:
+		case -1:
+			return rotated270(); // 3 回または -1 回
+		default:
+			return *this; // 0 回
+		}
+	}
+
+	Image Image::rotated90(int32 n)&&
+	{
+		switch (n % 4) // 時計回りに何回 90° 回転するか
+		{
+		case 1:
+		case -3:
+			return std::move(*this).rotated90(); // 1 回または -3 回
+		case 2:
+		case -2:
+			return std::move(*this).rotated180(); // 2 回または -2 回
+		case 3:
+		case -1:
+			return std::move(*this).rotated270(); // 3 回または -1 回
+		default:
+			return std::move(*this); // 0 回
+		}
+	}
+
 	Image& Image::rotate180()
 	{
 		std::reverse(begin(), end());
@@ -1159,7 +1477,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::rotated180() const
+	Image Image::rotated180() const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1184,6 +1502,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::rotated180() &&
+	{
+		return std::move(rotate180());
 	}
 
 	Image& Image::rotate270()
@@ -1217,7 +1540,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::rotated270() const
+	Image Image::rotated270() const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1243,6 +1566,13 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::rotated270() &&
+	{
+		// rotate270() が最適化されたら次の実装に変更する
+		// return std::move(rotate270());
+		return rotated270();
 	}
 
 	Image& Image::gammaCorrect(const double gamma)
@@ -1271,7 +1601,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::gammaCorrected(const double gamma) const
+	Image Image::gammaCorrected(const double gamma) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1297,6 +1627,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::gammaCorrected(const double gamma) &&
+	{
+		return std::move(gammaCorrect(gamma));
 	}
 
 	Image& Image::threshold(const uint8 threshold, const InvertColor invertColor)
@@ -1352,7 +1687,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::thresholded(const uint8 threshold, const InvertColor invertColor) const
+	Image Image::thresholded(const uint8 threshold, const InvertColor invertColor) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1407,6 +1742,11 @@ namespace s3d
 		}
 	}
 
+	Image Image::thresholded(const uint8 threshold, const InvertColor invertColor) &&
+	{
+		return std::move(this->threshold(threshold, invertColor));
+	}
+
 	Image& Image::threshold_Otsu(const InvertColor invertColor)
 	{
 		// 1. パラメータチェック
@@ -1432,7 +1772,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::thresholded_Otsu(const InvertColor invertColor) const
+	Image Image::thresholded_Otsu(const InvertColor invertColor) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1457,6 +1797,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::thresholded_Otsu(const InvertColor invertColor) &&
+	{
+		return std::move(threshold_Otsu(invertColor));
 	}
 
 	Image& Image::adaptiveThreshold(const AdaptiveThresholdMethod method, int32 blockSize, const double c, const InvertColor invertColor)
@@ -1488,7 +1833,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::adaptiveThresholded(const AdaptiveThresholdMethod method, int32 blockSize, const double c, const InvertColor invertColor) const
+	Image Image::adaptiveThresholded(const AdaptiveThresholdMethod method, int32 blockSize, const double c, const InvertColor invertColor) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1517,6 +1862,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::adaptiveThresholded(const AdaptiveThresholdMethod method, int32 blockSize, const double c, const InvertColor invertColor) &&
+	{
+		return std::move(adaptiveThreshold(method, blockSize, c, invertColor));
 	}
 
 	Image& Image::mosaic(const int32 size)
@@ -1575,12 +1925,17 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::mosaiced(const int32 size) const
+	Image Image::mosaiced(const int32 size) const&
 	{
 		return mosaiced(size, size);
 	}
 
-	Image Image::mosaiced(const int32 horizontal, const int32 vertical) const
+	Image Image::mosaiced(const int32 size) &&
+	{
+		return std::move(mosaic(size));
+	}
+
+	Image Image::mosaiced(const int32 horizontal, const int32 vertical) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1631,6 +1986,11 @@ namespace s3d
 
 			return image;
 		}
+	}
+
+	Image Image::mosaiced(const int32 horizontal, const int32 vertical) &&
+	{
+		return std::move(mosaic(horizontal, vertical));
 	}
 
 	Image& Image::spread(const int32 size)
@@ -1752,12 +2112,17 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::blurred(const int32 size, const BorderType borderType) const
+	Image Image::blurred(const int32 size, const BorderType borderType) const&
 	{
 		return blurred(size, size, borderType);
 	}
 
-	Image Image::blurred(const int32 horizontal, const int32 vertical, const BorderType borderType) const
+	Image Image::blurred(const int32 size, const BorderType borderType) &&
+	{
+		return std::move(blur(size, size, borderType));
+	}
+
+	Image Image::blurred(const int32 horizontal, const int32 vertical, const BorderType borderType) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1781,6 +2146,11 @@ namespace s3d
 			cv::blur(matSrc, matDst, cv::Size(horizontal * 2 + 1, vertical * 2 + 1), cv::Point(-1, -1), OpenCV_Bridge::ConvertBorderType(borderType));
 			return image;
 		}
+	}
+
+	Image Image::blurred(const int32 horizontal, const int32 vertical, const BorderType borderType) &&
+	{
+		return std::move(blur(horizontal, vertical, borderType));
 	}
 
 	Image& Image::medianBlur(int32 apertureSize)
@@ -1812,7 +2182,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::medianBlurred(int32 apertureSize) const
+	Image Image::medianBlurred(int32 apertureSize) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1841,6 +2211,11 @@ namespace s3d
 			cv::medianBlur(matSrc, matDst, apertureSize);
 			return image;
 		}
+	}
+
+	Image Image::medianBlurred(int32 apertureSize) &&
+	{
+		return std::move(medianBlur(apertureSize));
 	}
 
 	Image& Image::gaussianBlur(const int32 size, const BorderType borderType)
@@ -1872,12 +2247,17 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::gaussianBlurred(const int32 size, const BorderType borderType) const
+	Image Image::gaussianBlurred(const int32 size, const BorderType borderType) const&
 	{
 		return gaussianBlurred(size, size, borderType);
 	}
 
-	Image Image::gaussianBlurred(const int32 horizontal, const int32 vertical, const BorderType borderType) const
+	Image Image::gaussianBlurred(const int32 size, const BorderType borderType) &&
+	{
+		return std::move(gaussianBlur(size, size, borderType));
+	}
+
+	Image Image::gaussianBlurred(const int32 horizontal, const int32 vertical, const BorderType borderType) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1903,6 +2283,11 @@ namespace s3d
 		}
 	}
 
+	Image Image::gaussianBlurred(const int32 horizontal, const int32 vertical, const BorderType borderType) &&
+	{
+		return std::move(gaussianBlur(horizontal, vertical, borderType));
+	}
+
 	Image& Image::bilateralFilter(const int32 d, const double sigmaColor, const double sigmaSpace, const BorderType borderType)
 	{
 		// 1. パラメータチェック
@@ -1924,7 +2309,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::bilateralFiltered(const int32 d, const double sigmaColor, const double sigmaSpace, const BorderType borderType) const
+	Image Image::bilateralFiltered(const int32 d, const double sigmaColor, const double sigmaSpace, const BorderType borderType) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1944,6 +2329,11 @@ namespace s3d
 			OpenCV_Bridge::FromMatVec3b(matDst, image, OverwriteAlpha::No);
 			return image;
 		}
+	}
+
+	Image Image::bilateralFiltered(const int32 d, const double sigmaColor, const double sigmaSpace, const BorderType borderType) &&
+	{
+		return std::move(bilateralFilter(d, sigmaColor, sigmaSpace, borderType));
 	}
 
 	Image& Image::dilate(const int32 iterations)
@@ -1970,7 +2360,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::dilated(const int32 iterations) const
+	Image Image::dilated(const int32 iterations) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -1994,6 +2384,11 @@ namespace s3d
 			cv::dilate(matSrc, matDst, cv::Mat(), cv::Point(-1, -1), iterations);
 			return image;
 		}
+	}
+
+	Image Image::dilated(const int32 iterations) &&
+	{
+		return std::move(dilate(iterations));
 	}
 
 	Image& Image::erode(const int32 iterations)
@@ -2020,7 +2415,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::eroded(const int32 iterations) const
+	Image Image::eroded(const int32 iterations) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -2044,6 +2439,11 @@ namespace s3d
 			cv::erode(matSrc, matDst, cv::Mat(), cv::Point(-1, -1), iterations);
 			return image;
 		}
+	}
+
+	Image Image::eroded(const int32 iterations) &&
+	{
+		return std::move(erode(iterations));
 	}
 
 	Image& Image::floodFill(const Point& pos, const Color& color, const FloodFillConnectivity connectivity, const int32 lowerDifference, const int32 upperDifference)
@@ -2082,7 +2482,7 @@ namespace s3d
 		return *this;
 	}
 
-	Image Image::floodFilled(const Point& pos, const Color& color, const FloodFillConnectivity connectivity, const int32 lowerDifference, const int32 upperDifference) const
+	Image Image::floodFilled(const Point& pos, const Color& color, const FloodFillConnectivity connectivity, const int32 lowerDifference, const int32 upperDifference) const&
 	{
 		// 1. パラメータチェック
 		{
@@ -2116,6 +2516,11 @@ namespace s3d
 			OpenCV_Bridge::FromMatVec3b(mat, image, OverwriteAlpha::No);
 			return image;
 		}
+	}
+
+	Image Image::floodFilled(const Point& pos, const Color& color, const FloodFillConnectivity connectivity, const int32 lowerDifference, const int32 upperDifference) &&
+	{
+		return std::move(floodFill(pos, color, connectivity, lowerDifference, upperDifference));
 	}
 
 	Image& Image::scale(int32 width, int32 height, InterpolationAlgorithm interpolation)

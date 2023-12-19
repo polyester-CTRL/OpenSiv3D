@@ -44,12 +44,6 @@ namespace s3d
 		//
 		//////////////////////////////////////////////////
 
-		if (m_sampler)
-		{
-			::glDeleteSamplers(1, &m_sampler);
-			m_sampler = 0;
-		}
-
 		if (m_vertexArray)
 		{
 			::glDeleteVertexArrays(1, &m_vertexArray);
@@ -133,11 +127,6 @@ namespace s3d
 		{
 			::glGenVertexArrays(1, &m_vertexArray);
 			::glBindVertexArray(m_vertexArray);
-
-			::glGenSamplers(1, &m_sampler);
-			::glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			::glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			::glSamplerParameteri(m_sampler, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 		}
 
 		CheckOpenGLError();
@@ -752,6 +741,63 @@ namespace s3d
 			}
 
 			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_GL4::addRectShadow(const FloatRect& rect, const float blur, const Float4& color, const bool fill)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRectShadow(m_bufferCreator, rect, blur, color, fill))
+		{
+			if (not m_currentCustomVS)
+			{
+				m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			}
+
+			if (not m_currentCustomPS)
+			{
+				m_commandManager.pushStandardPS(m_standardPS->textureID);
+			}
+
+			m_commandManager.pushPSTexture(0, getBoxShadowTexture());
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_GL4::addCircleShadow(const Circle& circle, const float blur, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleShadow(m_bufferCreator, circle, blur, color, getMaxScaling()))
+		{
+			if (not m_currentCustomVS)
+			{
+				m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			}
+
+			if (not m_currentCustomPS)
+			{
+				m_commandManager.pushStandardPS(m_standardPS->textureID);
+			}
+
+			m_commandManager.pushPSTexture(0, getBoxShadowTexture());
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_GL4::addRoundRectShadow(const RoundRect& roundRect, const float blur, const Float4& color, const bool fill)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectShadow(m_bufferCreator, roundRect, blur, color, getMaxScaling(), fill))
+		{
+			if (not m_currentCustomVS)
+			{
+				m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			}
+
+			if (not m_currentCustomPS)
+			{
+				m_commandManager.pushStandardPS(m_standardPS->textureID);
+			}
+
+			m_commandManager.pushPSTexture(0, getBoxShadowTexture());
 			m_commandManager.pushDraw(indexCount);
 		}
 	}
@@ -1394,10 +1440,10 @@ namespace s3d
 		// render states
 		{
 			const bool linearFilter = (textureFilter == TextureFilter::Linear);
-			::glBindSampler(0, m_sampler);
-			::glSamplerParameteri(m_sampler, GL_TEXTURE_MIN_FILTER, linearFilter ? GL_LINEAR : GL_NEAREST);
-			::glSamplerParameteri(m_sampler, GL_TEXTURE_MAG_FILTER, linearFilter ? GL_LINEAR : GL_NEAREST);
-		
+			SamplerState samplerState = linearFilter ? SamplerState::ClampLinear : SamplerState::ClampNearest;
+			//samplerState.mip = TextureFilter::Nearest;
+
+			pRenderer->getSamplerState().setPS(0, samplerState);
 			pRenderer->getBlendState().set(BlendState::Opaque);
 			pRenderer->getRasterizerState().set(RasterizerState::Default2D);
 			pShader->setVS(m_standardVS->fullscreen_triangle.id());

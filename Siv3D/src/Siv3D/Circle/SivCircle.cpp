@@ -130,16 +130,15 @@ namespace s3d
 		{
 			// 周
 			{
-				const float radDelta = Math::TwoPiF / (quality - 1);
-				const float start = -(static_cast<float>(startAngle) + angle) + Math::HalfPiF;
-				const float angleScale = (angle / Math::TwoPiF);
+				const float start = (static_cast<float>(startAngle) + ((angle < 0.0f) ? angle : 0.0f));
+				const float radDelta = (Abs(angle) / (quality - 1));
 				Vec2* pDst = &vertices[1];
 
 				for (Vertex2D::IndexType i = 0; i < quality; ++i)
 				{
-					const float rad = (start + (radDelta * i) * angleScale);
+					const float rad = (start + (radDelta * i));
 					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->moveBy(r * c, -r * s);
+					(pDst++)->moveBy(r * s, -r * c);
 				}
 			}
 		}
@@ -147,14 +146,16 @@ namespace s3d
 		const RectF boundingRect = Geometry2D::BoundingRect(vertices);
 
 		Array<TriangleIndex> indices(vertexSize - 2);
-		TriangleIndex* pIndex = indices.data();
-
-		for (Vertex2D::IndexType i = 0; i < indices.size(); ++i)
 		{
-			pIndex->i0 = 0;
-			pIndex->i1 = (i + 1);
-			pIndex->i2 = (i + 2);
-			++pIndex;
+			TriangleIndex* pIndex = indices.data();
+
+			for (Vertex2D::IndexType i = 0; i < indices.size(); ++i)
+			{
+				pIndex->i0 = 0;
+				pIndex->i1 = (i + 1);
+				pIndex->i2 = (i + 2);
+				++pIndex;
+			}
 		}
 
 		return Polygon{ vertices, indices, boundingRect, SkipValidation::Yes };
@@ -179,19 +180,18 @@ namespace s3d
 
 		Array<Vec2> vertices(vertexSize, center);
 		{
-			const float radDelta = Math::TwoPiF / (quality - 1);
-			const float start = -(static_cast<float>(startAngle) + angle) + Math::HalfPiF;
-			const float angleScale = (angle / Math::TwoPiF);
+			const float start = (static_cast<float>(startAngle) + ((angle < 0.0f) ? angle : 0.0f));
+			const float radDelta = (Abs(angle) / (quality - 1));
 
 			Vec2* pHead = vertices.data();
 			Vec2* pTail = &vertices.back();
 
 			for (uint32 i = 0; i < quality; ++i)
 			{
-				const float rad = (start + (radDelta * i) * angleScale);
+				const float rad = (start + (radDelta * i));
 				const auto [s, c] = FastMath::SinCos(rad);
-				pHead->moveBy(rOuter * c, -rOuter * s);
-				pTail->moveBy(rInner * c, -rInner * s);
+				pHead->moveBy(rOuter * s, -rOuter * c);
+				pTail->moveBy(rInner * s, -rInner * c);
 				++pHead;
 				--pTail;
 			}
@@ -442,11 +442,13 @@ namespace s3d
 
 	const Circle& Circle::drawSegmentFromAngles(const double startAngle, const double angle, const ColorF& color) const
 	{
-		if (angle <= 0.0)
+		// 面積が 0 の場合は描画しない
+		if (angle == 0.0)
 		{
 			return *this;
 		}
 
+		// angle が 2π 以上の場合は円全体を描画する
 		if (Math::TwoPi <= angle)
 		{
 			return draw(color);
@@ -463,107 +465,28 @@ namespace s3d
 		return *this;
 	}
 
-	const Circle& Circle::drawShadow(const Vec2& offset, double blurRadius, const double spread, const ColorF& color) const
+	const Circle& Circle::drawShadow(const Vec2& offset, double blur, const double spread, const ColorF& color) const
 	{
-		if (blurRadius < 0.0)
+		// ブラー半径が 0 未満なら描画しない
+		if (blur < 0.0)
 		{
 			return *this;
 		}
 
-		if ((r + spread) < (blurRadius * 0.5))
+		const Circle baseCircle{ (center + offset), (r + spread) };
+
+		// 非ぼかし部分がない場合は直接描画へ
+		if (((r + spread) * 2.0) <= blur)
 		{
-			blurRadius = ((r + spread) * 2.0);
+			SIV3D_ENGINE(Renderer2D)->addTexturedQuad(SIV3D_ENGINE(Renderer2D)->getBoxShadowTexture(),
+				FloatQuad{ baseCircle.stretched(blur * 0.5).boundingRect().asQuad() }, FloatRect{ 0.0f, 0.0f, 1.0f, 1.0f }, color.toFloat4());
+			return *this;
 		}
 
-		const Float4 colorF			= color.toFloat4();
-		const float absR			= Abs(static_cast<float>(r + spread));
-		const float inShadowR		= static_cast<float>(r + spread - blurRadius * 0.5);
-		const float shadowR			= absR + static_cast<float>(blurRadius * 0.5);
-		const float scaledShadowR	= shadowR;
-		const float centerX			= static_cast<float>(center.x + offset.x);
-		const float centerY			= static_cast<float>(center.y + offset.y);
-		const Vertex2D::IndexType quality = static_cast<Vertex2D::IndexType>(Min(scaledShadowR * 0.225f + 18.0f, 255.0f));
-		const float radDelta		= (Math::TwoPiF / quality);
+		const double blurClamped = Min(blur, (baseCircle.r * 2.0));
 
-		const Vertex2D::IndexType outerVertexCount	= quality;
-		const Vertex2D::IndexType innnerVertexCount	= quality;
-
-		const size_t outerTriangleCount		= (quality * 2);
-		const size_t innnerTriangleCount	= quality;
-
-		const Vertex2D::IndexType vertexCount = (outerVertexCount + innnerVertexCount + 1);
-		const size_t triangleCount	= (outerTriangleCount + innnerTriangleCount);
-
-		Array<Vertex2D> vertices(vertexCount);
-		{
-			for (size_t i = 0; i < quality; ++i)
-			{
-				const float rad = (radDelta * i);
-				const auto [s, c] = FastMath::SinCos(rad);
-
-				Vertex2D* inner = &vertices[i];
-				Vertex2D* outer = (inner + outerVertexCount);
-
-				inner->pos.set((centerX + shadowR * c), (centerY - shadowR * s));
-				inner->tex.set(0.5f, 0.0f);
-				inner->color = colorF;
-
-				outer->pos.set((centerX + inShadowR * c), (centerY - inShadowR * s));
-				outer->tex.set(0.5f, 0.5f);
-				outer->color = colorF;
-			}
-
-			// 中心
-			{
-				Vertex2D* v = &vertices[vertexCount - 1];
-				v->pos.set(centerX, centerY);
-				v->tex.set(0.5f, 0.5f);
-				v->color = colorF;
-			}
-		}
-
-		Array<TriangleIndex> indices(triangleCount);
-		{
-			// outer
-			{
-				TriangleIndex* pDst = indices.data();
-
-				for (Vertex2D::IndexType i = 0; i < quality; ++i)
-				{
-					const Vertex2D::IndexType t0 = (i % outerVertexCount);
-					const Vertex2D::IndexType t1 = ((i + 1) % outerVertexCount);
-					const Vertex2D::IndexType t2 = ((i + outerVertexCount) % (outerVertexCount * 2));
-					const Vertex2D::IndexType t3 = ((i + 1) % outerVertexCount + outerVertexCount);
-
-					pDst->i0 = t0;
-					pDst->i1 = t1;
-					pDst->i2 = t2;
-					++pDst;
-
-					pDst->i0 = t2;
-					pDst->i1 = t1;
-					pDst->i2 = t3;
-					++pDst;
-				}
-			}
-
-			// inner
-			{
-				TriangleIndex* pDst = (indices.data() + outerTriangleCount);
-
-				for (Vertex2D::IndexType i = 0; i < quality; ++i)
-				{
-					pDst->i0 = (outerVertexCount + i);
-					pDst->i1 = (vertexCount - 1);
-					pDst->i2 = (outerVertexCount + ((i + 1) % quality));
-					++pDst;
-				}
-			}
-		}
-
-		const Texture& texture = SIV3D_ENGINE(Renderer2D)->getBoxShadowTexture();
-		SIV3D_ENGINE(Renderer2D)->addTexturedVertices(texture, vertices.data(), vertices.size(), indices.data(), indices.size());
-
+		SIV3D_ENGINE(Renderer2D)->addCircleShadow(baseCircle, static_cast<float>(blurClamped), color.toFloat4());
+		
 		return *this;
 	}
 
