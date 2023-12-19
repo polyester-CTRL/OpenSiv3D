@@ -37,6 +37,8 @@ namespace s3d
 		Number,
 
 		Bool,
+
+		Binary,
 	};
 
 	/// @brief JSON が持つ要素を走査するために使用するイテレータ
