@@ -957,6 +957,8 @@
 // シンプルな HTTP 通信ライブラリ | Simple HTTP library
 # include <Siv3D/SimpleHTTP.hpp>
 
+# include <Siv3D/MySimpleHTTP.hpp>
+
 //////////////////////////////////////////////////
 //
 //	シリアル通信 | Serial Communication
