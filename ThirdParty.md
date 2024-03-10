@@ -20,12 +20,13 @@ Name | Version
 [DirectXTK](https://github.com/microsoft/DirectXTK) | April 6, 2021
 [DirectXMath](https://github.com/microsoft/DirectXMath) | January 2022
 [DirectX Mesh Geometry Library](https://github.com/microsoft/DirectXMesh) | June 9, 2021
-[double-conversion](https://github.com/google/double-conversion) | v3.1.5
+[double-conversion](https://github.com/google/double-conversion) | v3.3.0
 [Earcut](https://github.com/mapbox/earcut.hpp) | 2.2.2
 [Easing Equations](http://robertpenner.com/easing/) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
-[fmt](https://github.com/fmtlib/fmt) | 8.1.1
+[fast_float](https://github.com/fastfloat/fast_float) | Version 6.0.0
+[fmt](https://github.com/fmtlib/fmt) | 10.1.1
 [Font Awesome Free](https://github.com/FortAwesome/Font-Awesome) | 5.15.2
 [FreeType](https://www.freetype.org/) | 2.10.4
 [gif_load](https://github.com/hidefromkgb/gif_load) | 
@@ -98,4 +99,4 @@ Name | Version
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.0
 [zlib](https://www.zlib.net/) | 1.2.11
-[Zstandard](https://github.com/facebook/zstd) | v1.5.1
+[Zstandard](https://github.com/facebook/zstd) | v1.5.5

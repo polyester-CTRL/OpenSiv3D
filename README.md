@@ -13,7 +13,7 @@
   - Custom vertex / pixel shaders (HLSL, GLSL)
   - Text rendering (Bitmap, SDF, MSDF)
   - PNG, JPEG, BMP, SVG, GIF, Animated GIF, TGA, PPM, WebP, TIFF
-  - Unicode 14.0 emojis and 7,000+ icons
+  - Unicode 15.1 emojis and 7,000+ icons
   - Image processing
   - Video rendering
 - **Audio** 
@@ -79,7 +79,7 @@
   - CSV / INI / JSON writer classes
   - JSON Validation
 - **Misc**
-  - Basic GUI (button, slider, radio buttons, checkbox, text box, color picker, list box, menu bar)
+  - Basic GUI (button, slider, radio buttons, checkbox, text box, color picker, list box, menu bar, table)
   - Integrated 2D physics engine (Box2D)
   - Advanced array / 2D array classes (`Array`, `Grid`)
   - Kd-tree
@@ -100,7 +100,7 @@
   - Clipboard
   - Power status
   - Scripting (AngelScript)
-  - OpenAI API (Chat, Image, Embedding)
+  - OpenAI API (Chat, Vision, Image, Speech, Embedding)
 
 <small>* Some features are limited to specific platforms</small>
 
@@ -109,7 +109,7 @@
 - **(English) Getting Started with Siv3D:** https://siv3d.github.io/en-us/
 - **(日本語) Siv3D をはじめよう:** https://siv3d.github.io/ja-jp/
 
-**v0.6.13** | *released 15 November 2023* | [Release Notes](https://siv3d.github.io/ja-jp/releases/)
+**v0.6.14** | *released 5 February 2024* | [Release Notes](https://siv3d.github.io/ja-jp/releases/)
 
 | Platform           | SDK  | Requirements                  |
 |:------------------:|:----------:|:------------------------------|
